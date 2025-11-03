@@ -1,0 +1,16 @@
+# Enforce LF for all text files
+* text=auto eol=lf
+
+# Windows batch files must keep CRLF
+*.bat text eol=crlf
+
+# Shell scripts must stay LF (important for Linux/Docker)
+*.sh text eol=lf
+
+# Mark binary files (no line ending conversion)
+*.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.class binary
