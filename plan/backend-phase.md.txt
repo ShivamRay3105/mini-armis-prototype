@@ -1,0 +1,274 @@
+Good. Then I’m not going to repeat basics or baby you.
+
+If **API Gateway + Auth Service + Service Registry + JWT + Refresh + blacklist** are already working, you’ve crossed **Phase-0**. Most people never get here.
+
+Now let’s be **precise, ruthless, and forward-moving**.
+
+---
+
+# Where you ACTUALLY are right now
+
+### ✅ Completed (don’t touch unless broken)
+
+* API Gateway routing
+* Auth Service
+* JWT access + refresh tokens
+* Token blacklist / Redis
+* Service registry (Eureka / Consul)
+* Role-based auth **at gateway level**
+
+This means:
+👉 You can safely **lock authentication** and move on
+👉 No more auth refactors unless a bug appears
+
+---
+
+# What is the VERY NEXT thing you must build?
+
+## 🎯 Asset Service (not Kafka, not frontend, not AI)
+
+Why?
+Because **everything else depends on assets**.
+
+No asset → no risk
+No asset → no alert
+No asset → no simulation meaning
+
+---
+
+# Phase 1: Asset Service (Week 1–2)
+
+## Responsibilities (DO NOT OVERLOAD IT)
+
+Asset Service is **state**, not intelligence.
+
+### It should:
+
+* Store assets (PLCs, HMIs, RTUs)
+* Track:
+
+  * protocol
+  * zone
+  * last_seen
+  * current risk_score
+  * status (active / maintenance / acknowledged)
+
+### It should NOT:
+
+* Calculate risk
+* Generate alerts
+* Talk to Kafka (yet)
+
+---
+
+## Minimal API you must implement
+
+```http
+POST /assets
+GET  /assets
+GET  /assets/{id}
+PATCH /assets/{id}/status
+PATCH /assets/{id}/risk
+```
+
+### Example asset payload
+
+```json
+{
+  "deviceType": "PLC",
+  "protocol": "MODBUS",
+  "zone": "OT_ZONE_1",
+  "ipAddress": "10.0.0.12"
+}
+```
+
+### Stored internally
+
+```text
+asset_id
+device_type
+protocol
+zone
+risk_score (int)
+last_seen
+status
+```
+
+---
+
+## Roles & permissions (IMPORTANT)
+
+| Role             | Permission             |
+| ---------------- | ---------------------- |
+| Security Analyst | READ assets, READ risk |
+| OT Admin         | CREATE / UPDATE assets |
+| System Admin     | ALL + health           |
+
+Enforce this **at the gateway**, not inside service logic.
+
+---
+
+# Phase 2: Event Ingestion Service (Week 3)
+
+This is where **“simulation” actually becomes real**.
+
+### What “simulated OT device” REALLY means
+
+> A backend endpoint that **emits events shaped like OT telemetry**
+
+NOT:
+
+* JUnit
+* Load testing
+* Random JSON
+
+YES:
+
+* Controlled, explainable OT-like events
+
+---
+
+## Event Ingestion API
+
+```http
+POST /events/simulate
+```
+
+```json
+{
+  "assetId": "123",
+  "eventType": "CONNECTION_ATTEMPT",
+  "protocol": "MODBUS",
+  "zone": "OT_ZONE_1"
+}
+```
+
+### What this service does
+
+* Validate asset exists
+* Add timestamp
+* Publish to Kafka → `asset-events`
+
+No DB required initially.
+
+---
+
+# Phase 3: Kafka (Now you learn it PROPERLY)
+
+You don’t need Kafka knowledge before this.
+You learn it **by necessity**, not theory.
+
+### Topics
+
+```text
+asset-events
+risk-events
+alert-events
+```
+
+### Ownership
+
+| Topic        | Producer        | Consumer      |
+| ------------ | --------------- | ------------- |
+| asset-events | Event Ingestion | Risk Engine   |
+| risk-events  | Risk Engine     | Alert Service |
+| alert-events | Alert Service   | WebSocket     |
+
+---
+
+# Phase 4: Risk Engine (Week 4)
+
+This is NOT AI.
+This is **deterministic rules**.
+
+Example rule set:
+
+```text
+IF protocol == MODBUS AND zone == OT → +40
+IF deviceType == PLC → +30
+IF multiple events in 5 mins → +20
+```
+
+### Output
+
+```json
+{
+  "assetId": "123",
+  "riskScore": 85,
+  "reason": "Unsafe protocol in OT zone"
+}
+```
+
+* Publish to `risk-events`
+* Call Asset Service → update risk_score
+
+---
+
+# Phase 5: Alert Service + WebSocket (Week 5)
+
+### Alert logic
+
+```text
+risk >= 70 → CRITICAL
+risk >= 40 → WARNING
+```
+
+### What this proves
+
+* Event correlation
+* Async processing
+* Real-time UI updates
+
+This is the **wow factor**.
+
+---
+
+# Phase 6: Frontend (Week 6+)
+
+Now frontend becomes EASY because:
+
+* APIs exist
+* Contracts exist
+* WebSocket exists
+
+Pages:
+
+* Dashboard
+* Assets
+* Alerts
+* Simulation
+* System Health
+
+---
+
+# VERY IMPORTANT: What NOT to do
+
+❌ Don’t learn AI now
+❌ Don’t do packet sniffing
+❌ Don’t scan real networks
+❌ Don’t chase “all protocols”
+❌ Don’t merge services “for simplicity”
+
+This is a **systems project**, not a malware lab.
+
+---
+
+# What you can confidently say now
+
+> “Authentication and routing are complete.
+> The next phase is asset modeling, followed by event-driven risk evaluation and alerting using Kafka.”
+
+That sounds like someone who knows what they’re doing.
+
+---
+
+## Your next action (no excuses)
+
+👉 Start **Asset Service**
+👉 Send me:
+
+* entity model
+* controller endpoints
+* DB schema
+
+I’ll tear it apart (in a good way) and make it solid.

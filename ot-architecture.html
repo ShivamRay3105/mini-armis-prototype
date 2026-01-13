@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OT Security Monitoring Platform – Architecture</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #38bdf8;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .box {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(56,189,248,0.1);
+    }
+
+    .box h3 {
+      margin-top: 0;
+      color: #facc15;
+      font-size: 16px;
+    }
+
+    .box ul {
+      padding-left: 18px;
+      margin: 8px 0 0 0;
+    }
+
+    .box li {
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #cbd5f5;
+    }
+
+    .flow {
+      margin-top: 30px;
+      padding: 20px;
+      background: #020617;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+    }
+
+    .flow pre {
+      background: #020617;
+      color: #22d3ee;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #64748b;
+      border-top: 1px solid #1e293b;
+      margin-top: 40px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>OT Security Monitoring Platform – Architecture View</h1>
+
+<div class="container">
+
+  <!-- FRONTEND -->
+  <div class="section">
+    <div class="section-title">Frontend Layer</div>
+    <div class="grid">
+      <div class="box">
+        <h3>React Dashboard</h3>
+        <ul>
+          <li>Asset Inventory View</li>
+          <li>Risk Scores & Status</li>
+          <li>Alerts Timeline</li>
+          <li>Manual Event Simulation</li>
+        </ul>
+        <ul>
+          <li><b>Tech:</b> React, REST APIs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GATEWAY & AUTH -->
+  <div class="section">
+    <div class="section-title">Access & Security Layer</div>
+    <div class="grid">
+      <div class="box">
+        <h3>API Gateway</h3>
+        <ul>
+          <li>Single Entry Point</li>
+          <li>Routing to Microservices</li>
+          <li>JWT Validation</li>
+        </ul>
+        <ul>
+          <li><b>Tech:</b> Spring Cloud Gateway</li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <h3>Auth Service</h3>
+        <ul>
+          <li>User Login / Logout</li>
+          <li>JWT & Refresh Tokens</li>
+          <li>Token Blacklisting</li>
+        </ul>
+        <ul>
+          <li><b>Tech:</b> Spring Security, Redis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CORE MICROSERVICES -->
+  <div class="section">
+    <div class="section-title">Core Backend Microservices</div>
+    <div class="grid">
+
+      <div class="box">
+        <h3>Asset Service</h3>
+        <ul>
+          <li>Device Inventory</li>
+          <li>Protocol Tracking</li>
+          <li>Risk Score Storage</li>
+        </ul>
+        <ul>
+          <li><b>Tech:</b> Spring Boot, PostgreSQL</li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <h3>Event Ingestion Service</h3>
+        <ul>
+          <li>Receives Device Events</li>
+          <li>Simulated OT Activity</li>
+          <li>Publishes Events</li>
+        </ul>
+        <ul>
+          <li><b>Tech:</b> REST, Kafka Producer</li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <h3>Risk Engine Service</h3>
+        <ul>
+          <li>Rule-Based Risk Analysis</li>
+          <li>Protocol & Behavior Rules</li>
+          <li>Risk Score Calculation</li>
+        </ul>
+        <ul>
+          <li><b>Tech:</b> Java, Spring Boot</li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <h3>Alert Service</h3>
+        <ul>
+          <li>Threshold-Based Alerts</li>
+          <li>Event Correlation</li>
+          <li>Real-Time Notifications</li>
+        </ul>
+        <ul>
+          <li><b>Tech:</b> Kafka Consumer, WebSocket</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MESSAGING & DATA -->
+  <div class="section">
+    <div class="section-title">Messaging & Data Layer</div>
+    <div class="grid">
+      <div class="box">
+        <h3>Kafka (Event Bus)</h3>
+        <ul>
+          <li>asset-events</li>
+          <li>risk-events</li>
+          <li>alert-events</li>
+        </ul>
+        <ul>
+          <li><b>Purpose:</b> Async, decoupled communication</li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <h3>Datastores</h3>
+        <ul>
+          <li>PostgreSQL – Persistent Data</li>
+          <li>Redis – Cache & Tokens</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULATION -->
+  <div class="section">
+    <div class="section-title">Simulated OT Environment</div>
+    <div class="grid">
+      <div class="box">
+        <h3>Simulated Devices</h3>
+        <ul>
+          <li>PLCs</li>
+          <li>HMIs</li>
+          <li>RTUs</li>
+        </ul>
+        <ul>
+          <li>Protocols: Modbus, DNP3</li>
+          <li>No real hardware required</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="flow">
+    <h3 style="color:#facc15;">End-to-End Flow</h3>
+    <pre>
+Simulated Device Event
+        ↓
+Event Ingestion Service
+        ↓
+Kafka (asset-events)
+        ↓
+Risk Engine
+        ↓
+Risk Score Updated
+        ↓
+Kafka (risk-events)
+        ↓
+Alert Service
+        ↓
+WebSocket Notification
+        ↓
+React Dashboard
+    </pre>
+  </div>
+
+</div>
+
+<footer>
+  OT Security Monitoring Platform • Backend-Focused Architecture • Java + React
+</footer>
+
+</body>
+</html>
