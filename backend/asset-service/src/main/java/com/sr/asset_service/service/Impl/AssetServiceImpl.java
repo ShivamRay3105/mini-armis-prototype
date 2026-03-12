@@ -116,13 +116,13 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset getAsset(Long id) {
-        return assetRepository.findById(id)
+        return assetRepository.findById(id.longValue())
                 .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + id));
     }
 
     @Override
     public Asset updateAssetStatus(Long id, StatusRequest request) {
-        Asset asset = assetRepository.findById(id)
+        Asset asset = assetRepository.findById(id.longValue())
                 .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + id));
 
         asset.setStatus(request.status());
@@ -136,7 +136,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset updateAssetLastSeen(Long id) {
-        Asset asset = assetRepository.findById(id)
+        Asset asset = assetRepository.findById(id.longValue())
                 .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + id));
 
         asset.setLastSeen(Instant.now());

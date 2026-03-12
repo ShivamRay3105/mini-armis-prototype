@@ -44,7 +44,7 @@ public class AssetController {
                 .body(assetMapper.mapAssetEntityToAssetResponse(createdAsset));
     }
 
-    // GET ALL ASSETS
+    // GET ALL ASSETS 
     @GetMapping
     public ResponseEntity<List<AssetResponse>> getAllAssets() {
 

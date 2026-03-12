@@ -16,11 +16,11 @@ import com.sr.asset_service.model.Status;
 public interface AssetMapper {
 
     // CreateAssetRequest toCreateAssetRequest(Asset asset);
-    // 1. CreateAssetRequest → Asset (request se entity banayega)
-    @Mapping(target = "riskScore", constant = "0") // default 0 daal
+    // 1. CreateAssetRequest → Asset
+    @Mapping(target = "riskScore", constant = "0") // default 0
     @Mapping(target = "status", expression = "java(Status.ACTIVE)") // default ACTIVE
-    @Mapping(target = "lastSeen", ignore = true) // null hi rahega ya service mein set kar
-    @Mapping(target = "id", ignore = true) // ID DB generate karega
+    @Mapping(target = "lastSeen", ignore = true)
+    @Mapping(target = "id", ignore = true) // ID DB generate
     Asset toAssetEntity(CreateAssetRequest request);
 
     AssetResponse mapAssetEntityToAssetResponse(Asset asset);
