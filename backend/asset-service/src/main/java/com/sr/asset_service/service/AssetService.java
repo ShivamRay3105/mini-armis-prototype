@@ -2,13 +2,13 @@ package com.sr.asset_service.service;
 
 import java.util.List;
 
-import com.sr.asset_service.dto.CreateAssetRequest;
+import com.sr.asset_service.dto.AssetRequest;
 import com.sr.asset_service.dto.StatusRequest;
 import com.sr.asset_service.model.Asset;
 
 public interface AssetService {
 
-    Asset createAsset(CreateAssetRequest request);
+    Asset createAsset(AssetRequest request);
 
     List<Asset> getAllAssets();
 

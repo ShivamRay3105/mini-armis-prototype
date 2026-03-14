@@ -3,7 +3,6 @@ package com.sr.asset_service.model;
 import java.time.Instant;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -15,7 +14,7 @@ import lombok.*;
 public class Asset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
+    @Column(name = "assetId")
     private Long id;
 
     @Column(name = "device_type", nullable = false)

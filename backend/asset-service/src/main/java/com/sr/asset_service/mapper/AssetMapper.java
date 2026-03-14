@@ -7,8 +7,8 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
+import com.sr.asset_service.dto.AssetRequest;
 import com.sr.asset_service.dto.AssetResponse;
-import com.sr.asset_service.dto.CreateAssetRequest;
 import com.sr.asset_service.model.Asset;
 import com.sr.asset_service.model.Status;
 
@@ -21,11 +21,13 @@ public interface AssetMapper {
     @Mapping(target = "status", expression = "java(Status.ACTIVE)") // default ACTIVE
     @Mapping(target = "lastSeen", ignore = true)
     @Mapping(target = "id", ignore = true) // ID DB generate
-    Asset toAssetEntity(CreateAssetRequest request);
+    // @BeanMapping(IgnoreByDefault = true) // Only map fields which are mentioned
+    // above , else all don't map
+    Asset mapAssetRequestToAssetEntity(AssetRequest request);
 
     AssetResponse mapAssetEntityToAssetResponse(Asset asset);
 
     // Bonus: Agar update karna ho future mein (patch/put)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromRequest(CreateAssetRequest request, @MappingTarget Asset asset);
+    void updateEntityFromRequest(AssetRequest request, @MappingTarget Asset asset);
 }

@@ -79,7 +79,7 @@ import org.springframework.stereotype.Service;
 
 import com.sr.asset_service.Exception.DuplicateResourceException;
 import com.sr.asset_service.Exception.ResourceNotFoundException;
-import com.sr.asset_service.dto.CreateAssetRequest;
+import com.sr.asset_service.dto.AssetRequest;
 import com.sr.asset_service.dto.StatusRequest;
 import com.sr.asset_service.mapper.AssetMapper;
 import com.sr.asset_service.model.Asset;
@@ -93,12 +93,13 @@ import lombok.RequiredArgsConstructor;
 public class AssetServiceImpl implements AssetService {
 
     private final AssetRepository assetRepository;
+    
     private final AssetMapper assetMapper;
 
     @Override
-    public Asset createAsset(CreateAssetRequest request) {
+    public Asset createAsset(AssetRequest request) {
 
-        Asset newAsset = assetMapper.toAssetEntity(request);
+        Asset newAsset = assetMapper.mapAssetRequestToAssetEntity(request);
         newAsset.setLastSeen(Instant.now());
 
         try {
