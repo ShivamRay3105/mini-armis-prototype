@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "EventIngestionServiceApplication",
+            "request": "launch",
+            "mainClass": "com.sr.Event_Ingestion_Service.EventIngestionServiceApplication",
+            "projectName": "Event-Ingestion-Service"
+        },
+        {
+            "type": "java",
+            "name": "ServiceRegistryApplication",
+            "request": "launch",
+            "mainClass": "com.sr.Service_Registry.ServiceRegistryApplication",
+            "projectName": "Service-Registry"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-AssetServiceApplication<asset-service>",
             "request": "launch",
             "cwd": "${workspaceFolder}",

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record AssetRequest(
-        @NotBlank(message = "Device type bhenchod dena padega") String deviceType,
+        @NotBlank(message = "Give device type") String deviceType,
 
         @NotBlank String protocol,
 
