@@ -6,6 +6,7 @@ import com.sr.Event_Ingestion_Service.client.AssetServiceClient;
 import com.sr.Event_Ingestion_Service.dto.EventRequest;
 import com.sr.Event_Ingestion_Service.exception.AssetDecommissionedException;
 import com.sr.Event_Ingestion_Service.exception.AssetNotFoundException;
+import com.sr.Event_Ingestion_Service.kafka.AssetEventProducer;
 import com.sr.Event_Ingestion_Service.model.AssetDTO;
 import com.sr.Event_Ingestion_Service.model.AssetEvent;
 import com.sr.Event_Ingestion_Service.model.Status;
@@ -24,6 +25,8 @@ public class EventIngestionServiceImpl implements EventIngestionService {
     private final AssetEventMapper assetEventMapper;
 
     private final AssetServiceClient assetServiceClient;
+
+    private final AssetEventProducer assetEventProducer;
 
     @Override
     public void validateAsset(Long assetId) {
@@ -56,6 +59,8 @@ public class EventIngestionServiceImpl implements EventIngestionService {
         log.info("Ingesting event for assetId {}", eventRequest.assetId());
         AssetEvent event = assetEventMapper.mapEventRequestToAssetEvent(eventRequest);
         log.info("Event created with id {}", event.eventId());
+        assetEventProducer.sendEvent(event);
+        log.info("Event sent to Kafka topic for assetId {}", eventRequest.assetId());
         return event;
     }
 
