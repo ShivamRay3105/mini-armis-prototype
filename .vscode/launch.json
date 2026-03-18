@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "RiskEngineApplication",
+            "request": "launch",
+            "mainClass": "com.sr.RISK_ENGINE.RiskEngineApplication",
+            "projectName": "RISK-ENGINE"
+        },
+        {
+            "type": "java",
+            "name": "Application",
+            "request": "launch",
+            "mainClass": "com.sr.RISK_ENGINE.Application",
+            "projectName": "RISK-ENGINE"
+        },
+        {
+            "type": "java",
             "name": "EventIngestionServiceApplication",
             "request": "launch",
             "mainClass": "com.sr.Event_Ingestion_Service.EventIngestionServiceApplication",

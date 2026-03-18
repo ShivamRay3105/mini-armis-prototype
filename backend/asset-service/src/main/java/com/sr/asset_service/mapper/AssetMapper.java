@@ -20,14 +20,15 @@ public interface AssetMapper {
     @Mapping(target = "riskScore", constant = "0") // default 0
     @Mapping(target = "status", expression = "java(Status.ACTIVE)") // default ACTIVE
     @Mapping(target = "lastSeen", ignore = true)
-    @Mapping(target = "id", ignore = true) // ID DB generate
+    @Mapping(target = "assetId", ignore = true) // ID DB generate
     // @BeanMapping(IgnoreByDefault = true) // Only map fields which are mentioned
     // above , else all don't map
     Asset mapAssetRequestToAssetEntity(AssetRequest request);
 
+    @Mapping(source = "assetId", target = "assetId")
     AssetResponse mapAssetEntityToAssetResponse(Asset asset);
 
-    // Bonus: Agar update karna ho future mein (patch/put)
+    // Bonus: If in future wanna update using (patch/put)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(AssetRequest request, @MappingTarget Asset asset);
 }

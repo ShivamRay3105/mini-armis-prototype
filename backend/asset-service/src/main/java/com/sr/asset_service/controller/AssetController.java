@@ -21,7 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/assets")
 public class AssetController {
-        
+
         private final AssetService assetService;
 
         private final AssetMapper assetMapper;
@@ -36,7 +36,7 @@ public class AssetController {
                 URI location = ServletUriComponentsBuilder
                                 .fromCurrentRequest()
                                 .path("/{id}")
-                                .buildAndExpand(createdAsset.getId())
+                                .buildAndExpand(createdAsset.getAssetId())
                                 .toUri();
 
                 return ResponseEntity.created(location)

@@ -10,10 +10,13 @@ public record AssetRequest(
 
         @NotBlank String zone,
 
-        @NotBlank @Pattern(regexp = "^([0-9]{1,3}\\.){3}[0-9]{1,3}$", message = "IP galat hai chutiye") String ipAddress) {
+        @NotBlank @Pattern(regexp = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(same pattern)){3}$", message = "Invalid ipAddress format ") String ipAddress) {
     public AssetRequest {
-        if (deviceType != null) {
+        if (deviceType != null)
             deviceType = deviceType.trim().toUpperCase();
-        }
+        if (protocol != null)
+            protocol = protocol.trim().toUpperCase();
+        if (zone != null)
+            zone = zone.trim().toUpperCase();
     }
 }

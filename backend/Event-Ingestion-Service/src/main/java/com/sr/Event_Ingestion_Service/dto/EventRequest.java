@@ -9,9 +9,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record EventRequest(
 
-        @NotNull Long assetId,
-        @NotBlank EventType eventType,
-        @NotNull Instant timestamp
+                @NotNull Long assetId,
+                @NotBlank EventType eventType,
+                @NotNull Instant timestamp
 
 ) {
 }

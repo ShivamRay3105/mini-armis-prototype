@@ -1,4 +1,4 @@
-package com.sr.Event_Ingestion_Service.kafka;
+package com.sr.Event_Ingestion_Service.Producer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequiredArgsConstructor
-
 public class AssetEventProducer {
 
     private final KafkaTemplate<String, AssetEvent> kafkaTemplate;

@@ -1,0 +1,2 @@
+SentinelStream is a simulation-based, event-driven risk intelligence platform that processes asset activity in real time using Kafka and microservices.
+It analyzes event sequences, time-based patterns, and behavioral anomalies to generate dynamic risk scores and alerts.

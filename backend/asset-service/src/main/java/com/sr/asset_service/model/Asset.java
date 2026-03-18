@@ -15,7 +15,7 @@ public class Asset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "assetId")
-    private Long id;
+    private Long assetId;
 
     @Column(name = "device_type", nullable = false)
     private String deviceType; // PLC, HMI, RTU
