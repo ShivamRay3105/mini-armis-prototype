@@ -1,15 +1,15 @@
 package com.sr.RISK_ENGINE.model;
 
 public enum EventType {
-    AUTH_SUCCESS,
-    AUTH_FAILURE,
+    AUTH_SUCCESS, // 200 
+    AUTH_FAILURE, // 401 unauthorized barrier
     CONNECTION_ATTEMPT,
     CONFIG_CHANGE,
     DEVICE_RESTART,
     PROTOCOL_VIOLATION,
     MALWARE_DETECTED,
-    UNAUTHORIZED_ACCESS,
-    PRIVILEGE_ESCALATION,
+    UNAUTHORIZED_ACCESS, // 403 bypassed - RBAC violation
+    PRIVILEGE_ESCALATION, //  RBAC violation
     PORT_SCAN,
     SUSPICIOUS_TRAFFIC,
     DOS_ATTACK,
