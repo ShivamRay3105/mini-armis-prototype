@@ -2,18 +2,21 @@ package com.sr.RISK_ENGINE.Service.Impl;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
+import com.sr.RISK_ENGINE.Rules.RiskRule;
+import com.sr.RISK_ENGINE.Rules.Base.BaseScoreRule;
+import com.sr.RISK_ENGINE.Rules.Frequency.AuthFailureFrequencyRule;
+import com.sr.RISK_ENGINE.Rules.Frequency.PortScanFrequencyRule;
+import com.sr.RISK_ENGINE.Rules.Sequence.AuthSequenceRule;
+import com.sr.RISK_ENGINE.Rules.Sequence.PrivilegeEscalationRule;
 import com.sr.RISK_ENGINE.Service.RiskService;
 import com.sr.RISK_ENGINE.State.AssetContext;
 import com.sr.RISK_ENGINE.model.AssetEvent;
-import com.sr.RISK_ENGINE.model.EventType;
 import com.sr.RISK_ENGINE.model.RiskLevel;
 
 @Service
@@ -21,6 +24,15 @@ public class RiskServiceImpl implements RiskService {
 
     private final Map<Long, AssetContext> stateStore = new ConcurrentHashMap<>();
 
+    // Rule list
+    private final List<RiskRule> rules = List.of(
+            new BaseScoreRule(),
+            new AuthFailureFrequencyRule(),
+            new AuthSequenceRule(),
+            new PrivilegeEscalationRule(),
+            new PortScanFrequencyRule());
+
+    @Override
     public void processEvent(AssetEvent event) {
 
         // Get or create context
@@ -47,89 +59,17 @@ public class RiskServiceImpl implements RiskService {
 
     private double calculateRisk(AssetContext assetContext) {
 
-        Deque<AssetEvent> events = assetContext.getRecentEvents();
-
         double score = 0;
 
-        // base score
-        score += calculateBaseScore(events);
-
-        // frequency and patterns
-        score += detectFrequency(events);
-
-        // sequences
-        score += detectSequences(events);
-
+        for (RiskRule rule : rules) {
+            score += rule.evaluate(assetContext);
+        }
         // (later) decay rules
         score = applyDecay(score, assetContext);
 
         score = Math.min(score, 100);
 
         return score;
-    }
-
-    private double getWeight(EventType type) {
-        return switch (type) {
-            case AUTH_FAILURE -> 5.0;
-            case UNAUTHORIZED_ACCESS -> 20.0;
-            default -> 0.0;
-        };
-    }
-
-    private double calculateBaseScore(Deque<AssetEvent> events) {
-        double baseScore = 0.0;
-        for (AssetEvent event : events) {
-            baseScore += getWeight(event.eventType());
-        }
-        return baseScore;
-    }
-
-    private double detectFrequency(Deque<AssetEvent> events) {
-        int authFailures = 0;
-        for (AssetEvent event : events) {
-            if (event.eventType() == EventType.AUTH_FAILURE) {
-                authFailures++;
-            }
-        }
-        if (authFailures >= 10)
-            return 50.0;
-        else if (authFailures >= 5)
-            return 25.0;
-        else if (authFailures >= 3)
-            return 10.0;
-        return 0.0;
-    }
-
-    private double detectSequences(Deque<AssetEvent> events) {
-
-        double sequenceScore = 0.0;
-
-        List<AssetEvent> eventList = new ArrayList<>(events);
-
-        for (int i = 0; i < eventList.size(); i++) {
-
-            if (eventList.get(i).eventType() == EventType.UNAUTHORIZED_ACCESS) {
-
-                // look backward
-                for (int j = i - 1; j >= 0; j--) {
-
-                    if (sequenceScore == 50.0)
-                        break; // max score for this sequence of auth events
-
-                    long timeDifference = Duration.between(eventList.get(j).timestamp(), eventList.get(i).timestamp())
-                            .toSeconds();
-                    if (timeDifference > 120)
-                        break;
-
-                    if (eventList.get(j).eventType() == EventType.AUTH_FAILURE) {
-                        sequenceScore = Math.max(sequenceScore, 40.0);
-                    } else if (eventList.get(j).eventType() == EventType.AUTH_SUCCESS) {
-                        sequenceScore = Math.max(sequenceScore, 50.0);
-                    }
-                }
-            }
-        }
-        return sequenceScore;
     }
 
     private double applyDecay(double score, AssetContext assetContext) {
