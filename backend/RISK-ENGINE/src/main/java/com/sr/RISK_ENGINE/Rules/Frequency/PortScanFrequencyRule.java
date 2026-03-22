@@ -1,31 +1,25 @@
 package com.sr.RISK_ENGINE.Rules.Frequency;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Deque;
 
 import com.sr.RISK_ENGINE.Rules.RiskRule;
 import com.sr.RISK_ENGINE.State.AssetContext;
 import com.sr.RISK_ENGINE.model.AssetEvent;
 import com.sr.RISK_ENGINE.model.EventType;
+import com.sr.RISK_ENGINE.util.EventUtils;
 
 public class PortScanFrequencyRule implements RiskRule {
     @Override
     public double evaluate(AssetContext context) {
+
         Deque<AssetEvent> events = context.getRecentEvents();
 
-        int portScans = 0;
-        if(events.isEmpty()) return 0.0;
-        Instant currentTime = events.peekLast().timestamp(); // most recent event time
+        EventUtils eventUtils = new EventUtils(context);
 
-        for (AssetEvent event : events) {
-            if (event.eventType() == EventType.PORT_SCAN) {
-                long timeDifference = Duration.between(event.timestamp(), currentTime).toSeconds();
-                if (timeDifference <= 60) {
-                    portScans++;
-                }
-            }
-        }
+        if (events.isEmpty())
+            return 0.0;
+
+        int portScans = eventUtils.findRecent(events, EventType.PORT_SCAN, 60);
 
         if (portScans >= 40)
             return 60.0;
