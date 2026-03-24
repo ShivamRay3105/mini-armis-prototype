@@ -1,20 +1,19 @@
 package com.sr.Event_Ingestion_Service.model;
 
 public enum EventType {
+
+    // Auth Layer
     AUTH_SUCCESS,
     AUTH_FAILURE,
-    CONNECTION_ATTEMPT,
-    CONFIG_CHANGE,
-    DEVICE_RESTART,
-    PROTOCOL_VIOLATION,
-    MALWARE_DETECTED,
+
+    // Access Control
     UNAUTHORIZED_ACCESS,
     PRIVILEGE_ESCALATION,
+
+    // Network Behavior
     PORT_SCAN,
     SUSPICIOUS_TRAFFIC,
-    DOS_ATTACK,
-    FIRMWARE_CHANGE,
-    CONFIG_TAMPERING,
-    ANOMALOUS_BEHAVIOR,
-    HEARTBEAT_MISSED
+
+    // System Behavior
+    ANOMALOUS_BEHAVIOR
 }

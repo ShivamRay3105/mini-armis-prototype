@@ -19,7 +19,7 @@ public class PortScanFrequencyRule implements RiskRule {
         if (events.isEmpty())
             return 0.0;
 
-        int portScans = eventUtils.findRecent(events, EventType.PORT_SCAN, 60);
+        int portScans = eventUtils.findRecent(events, EventType.PORT_SCAN, 60, events.peekLast().timestamp());
 
         if (portScans >= 40)
             return 60.0;

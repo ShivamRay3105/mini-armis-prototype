@@ -25,12 +25,12 @@ public class AssetContext {
         recentEvents.addLast(event);
     }
 
-    public void removeOldEvents(Instant cutoff) {
-        while (!recentEvents.isEmpty() &&
-                recentEvents.peekFirst().timestamp().isBefore(cutoff)) {
+    public void removeOldEvents() {
+        while (recentEvents.size() > 1000)
             recentEvents.removeFirst();
-        }
     }
+
+    
 
     public void updateRisk(double newScore) {
         this.riskScore = newScore;

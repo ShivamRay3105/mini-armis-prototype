@@ -27,37 +27,39 @@ public class EventUtils {
         return count;
     }
 
-    public int findRecent(Deque<AssetEvent> events, EventType eventType, int withinSeconds) {
+    public int findRecent(Deque<AssetEvent> events, EventType eventType, int withinSeconds,
+            Instant currentEventTimestamp) {
         int count = 0;
-        Instant currentTime = Instant.now();
+        Instant startWindow = currentEventTimestamp.minusSeconds(withinSeconds);
         for (AssetEvent event : events) {
-            if (event.eventType() == eventType) {
-                if (event.timestamp().isAfter(currentTime.minusSeconds(withinSeconds))) {
-                    count++;
-                }
+            if (event.eventType() == eventType && event.timestamp().isAfter(startWindow)) {
+                count++;
             }
         }
         return count;
     }
 
-    public boolean hasSequence(Deque<AssetEvent> events, EventType eventTypeA, EventType eventTypeB, int timeWindow) {
-        Instant currentTime = Instant.now();
-        for (AssetEvent event : events) {
-            if (event.eventType() == eventTypeA) {
-                if (event.timestamp().isAfter(currentTime.minusSeconds(timeWindow))) {
-                    // Look for the next event of type B within the time window
-                    for (AssetEvent nextEvent : events) {
-                        if (nextEvent.eventType() == eventTypeB && nextEvent.timestamp().isAfter(event.timestamp())) {
-                            long timeDifference = Duration.between(event.timestamp(), nextEvent.timestamp())
-                                    .toSeconds();
-                            if (timeDifference <= timeWindow) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
+    // public boolean hasSequence(Deque<AssetEvent> events, EventType eventTypeA,
+    // EventType eventTypeB, int timeWindow) {
+    // Instant currentTime = Instant.now();
+    // for (AssetEvent event : events) {
+    // if (event.eventType() == eventTypeA) {
+    // if (event.timestamp().isAfter(currentTime.minusSeconds(timeWindow))) {
+    // // Look for the next event of type B within the time window
+    // for (AssetEvent nextEvent : events) {
+    // if (nextEvent.eventType() == eventTypeB &&
+    // nextEvent.timestamp().isAfter(event.timestamp())) {
+    // long timeDifference = Duration.between(event.timestamp(),
+    // nextEvent.timestamp())
+    // .toSeconds();
+    // if (timeDifference <= timeWindow) {
+    // return true;
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
+    // return false;
+    // }
 }

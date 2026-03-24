@@ -14,15 +14,21 @@ import com.sr.RISK_ENGINE.Rules.Frequency.AuthFailureFrequencyRule;
 import com.sr.RISK_ENGINE.Rules.Frequency.PortScanFrequencyRule;
 import com.sr.RISK_ENGINE.Rules.Sequence.AuthSequenceRule;
 import com.sr.RISK_ENGINE.Rules.Sequence.PrivilegeEscalationRule;
+import com.sr.RISK_ENGINE.Service.IdempotencyService;
 import com.sr.RISK_ENGINE.Service.RiskService;
 import com.sr.RISK_ENGINE.State.AssetContext;
 import com.sr.RISK_ENGINE.model.AssetEvent;
 import com.sr.RISK_ENGINE.model.RiskLevel;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class RiskServiceImpl implements RiskService {
 
     private final Map<Long, AssetContext> stateStore = new ConcurrentHashMap<>();
+
+    private final IdempotencyService idempotencyService;
 
     // Rule list
     private final List<RiskRule> rules = List.of(
@@ -35,6 +41,11 @@ public class RiskServiceImpl implements RiskService {
     @Override
     public void processEvent(AssetEvent event) {
 
+        if (idempotencyService.isDuplicate(event.eventId())) {
+            System.out.println("Duplicate Event Ignored: " + event.eventId());
+            return;
+        }
+
         // Get or create context
         AssetContext assetContext = stateStore.computeIfAbsent(
                 event.assetId(),
@@ -42,7 +53,7 @@ public class RiskServiceImpl implements RiskService {
 
         // Update state
         assetContext.addEvent(event);
-        assetContext.removeOldEvents(Instant.now().minusSeconds(300));
+        assetContext.removeOldEvents();
 
         // old score
         double oldScore = assetContext.getRiskScore();
