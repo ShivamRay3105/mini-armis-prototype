@@ -4,20 +4,22 @@ import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sr.RISK_ENGINE.model.AssetEvent;
 
 public class AssetContext {
 
     private final Long assetId;
-
     private double riskScore;
-
-    private final Deque<AssetEvent> recentEvents = new ArrayDeque<>();
-
+    private final Deque<AssetEvent> recentEvents; // Stay final!
     private Instant lastUpdated;
 
-    public AssetContext(Long assetId) {
+    // Tell Jackson to use THIS constructor when reading from Redis
+    @JsonCreator
+    public AssetContext(@JsonProperty("assetId") Long assetId) {
         this.assetId = assetId;
+        this.recentEvents = new ArrayDeque<>();
         this.lastUpdated = Instant.now();
     }
 
@@ -30,11 +32,9 @@ public class AssetContext {
             recentEvents.removeFirst();
     }
 
-    
-
-    public void updateRisk(double newScore) {
+    public void updateRisk(double newScore, Instant eventTime) {
         this.riskScore = newScore;
-        this.lastUpdated = Instant.now();
+        this.lastUpdated = eventTime;
     }
 
     public Deque<AssetEvent> getRecentEvents() {

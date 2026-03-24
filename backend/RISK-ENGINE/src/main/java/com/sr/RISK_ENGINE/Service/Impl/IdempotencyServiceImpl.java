@@ -26,7 +26,7 @@ public class IdempotencyServiceImpl implements IdempotencyService {
         Boolean isNew = redisTemplate.opsForValue().setIfAbsent(
                 key,
                 "1",
-                Duration.ofHours(24));
+                Duration.ofHours(1));
 
         // If isNew is false, it means the key already existed -> It's a duplicate!
         return Boolean.FALSE.equals(isNew);

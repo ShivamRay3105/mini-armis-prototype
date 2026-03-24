@@ -3,9 +3,8 @@ package com.sr.RISK_ENGINE.Service.Impl;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.sr.RISK_ENGINE.Rules.RiskRule;
@@ -26,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RiskServiceImpl implements RiskService {
 
-    private final Map<Long, AssetContext> stateStore = new ConcurrentHashMap<>();
+    private final RedisTemplate<String, AssetContext> assetTemplate;
 
     private final IdempotencyService idempotencyService;
 
@@ -47,9 +46,12 @@ public class RiskServiceImpl implements RiskService {
         }
 
         // Get or create context
-        AssetContext assetContext = stateStore.computeIfAbsent(
-                event.assetId(),
-                AssetContext::new);
+        String key = "asset:" + event.assetId();
+        AssetContext assetContext = assetTemplate.opsForValue().get(key);
+
+        if (assetContext == null) {
+            assetContext = new AssetContext(event.assetId());
+        }
 
         // Update state
         assetContext.addEvent(event);
@@ -62,7 +64,10 @@ public class RiskServiceImpl implements RiskService {
         double newScore = calculateRisk(assetContext);
 
         // Apply decay (optional in same step)
-        assetContext.updateRisk(newScore);
+        assetContext.updateRisk(newScore, event.timestamp());
+
+        // SAVE BACK TO REDIS
+        assetTemplate.opsForValue().set(key, assetContext, Duration.ofMinutes(15));
 
         // Push to Asset Service (only if needed)
         maybeUpdateAssetService(assetContext, oldScore);
@@ -89,9 +94,10 @@ public class RiskServiceImpl implements RiskService {
         // calculation, this is a simplification and can be improved by using the
         // timestamp of the latest event in the context
 
+        Instant latestEventTime = assetContext.getRecentEvents().peekLast().timestamp();
         long seconds = Duration.between(
                 assetContext.getLastUpdated(),
-                Instant.now()).toSeconds();
+                latestEventTime).toSeconds();
         double decay = seconds * 0.1;
         score -= decay;
 
