@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.sr.RISK_ENGINE.Client.AssetServiceClient;
 import com.sr.RISK_ENGINE.Rules.RiskRule;
 import com.sr.RISK_ENGINE.Rules.Base.BaseScoreRule;
 import com.sr.RISK_ENGINE.Rules.Frequency.AuthFailureFrequencyRule;
@@ -16,6 +17,7 @@ import com.sr.RISK_ENGINE.Rules.Sequence.PrivilegeEscalationRule;
 import com.sr.RISK_ENGINE.Service.IdempotencyService;
 import com.sr.RISK_ENGINE.Service.RiskService;
 import com.sr.RISK_ENGINE.State.AssetContext;
+import com.sr.RISK_ENGINE.dto.UpdateRiskRequest;
 import com.sr.RISK_ENGINE.model.AssetEvent;
 import com.sr.RISK_ENGINE.model.RiskLevel;
 
@@ -28,6 +30,8 @@ public class RiskServiceImpl implements RiskService {
     private final RedisTemplate<String, AssetContext> assetTemplate;
 
     private final IdempotencyService idempotencyService;
+
+    private final AssetServiceClient assetService;
 
     // Rule list
     private final List<RiskRule> rules = List.of(
@@ -117,7 +121,8 @@ public class RiskServiceImpl implements RiskService {
         if (delta >= 10 || riskLevelChanged(oldScore, newRiskScore)) {
 
             // call asset service to update risk score
-            // assetService.updateRiskScore(assetContext.getAssetId(), newScore);
+            UpdateRiskRequest request = new UpdateRiskRequest(assetContext.getAssetId(), newRiskScore);
+            assetService.updateRiskScore(request);
         }
 
     }

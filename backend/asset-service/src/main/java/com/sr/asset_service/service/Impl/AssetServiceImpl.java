@@ -93,7 +93,7 @@ import lombok.RequiredArgsConstructor;
 public class AssetServiceImpl implements AssetService {
 
     private final AssetRepository assetRepository;
-    
+
     private final AssetMapper assetMapper;
 
     @Override
@@ -142,5 +142,20 @@ public class AssetServiceImpl implements AssetService {
 
         asset.setLastSeen(Instant.now());
         return assetRepository.save(asset);
+    }
+
+    @Override
+    public boolean updateRisk(Long assetId, double newRiskScore) {
+        boolean updatedSuccessfully = false;
+        if (assetId == null) {
+            throw new IllegalArgumentException("Asset ID cannot be null");
+        }
+        Asset asset = assetRepository.findById(assetId)
+                .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + assetId));
+
+        asset.setRiskScore((int) Math.round(newRiskScore));
+        assetRepository.save(asset);
+        updatedSuccessfully = true;
+        return updatedSuccessfully;
     }
 }

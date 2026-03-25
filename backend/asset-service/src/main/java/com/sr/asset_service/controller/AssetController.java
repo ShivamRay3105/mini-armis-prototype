@@ -3,6 +3,7 @@ package com.sr.asset_service.controller;
 import com.sr.asset_service.dto.AssetRequest;
 import com.sr.asset_service.dto.AssetResponse;
 import com.sr.asset_service.dto.StatusRequest;
+import com.sr.asset_service.dto.UpdateRiskRequest;
 import com.sr.asset_service.mapper.AssetMapper;
 import com.sr.asset_service.model.Asset;
 import com.sr.asset_service.service.AssetService;
@@ -89,15 +90,17 @@ public class AssetController {
         // // // UPDATE ASSET RISK SCORE
         // // // (CALLED BY RISK ENGINE)
         // // // -------------------------
-        // // @PatchMapping("/{id}/risk")
-        // // public Asset updateRiskScore(
-        // // @PathVariable Long id,
-        // // @Valid @RequestBody UpdateRiskRequest request) {
+        @PutMapping("/update-risk")
+        public ResponseEntity<String> updateRiskScore(
+                        @RequestBody UpdateRiskRequest request) {
 
-        // // Asset asset = assetRepository.findById(id)
-        // // .orElseThrow(() -> new RuntimeException("Asset not found"));
+                boolean riskUpdated = assetService.updateRisk(request.assetId(), request.newRiskScore());
 
-        // // asset.setRiskScore(request.getRiskScore());
-        // // return assetRepository.save(asset);
-        // // }
+                if (riskUpdated) {
+                        return ResponseEntity.ok("Risk score updated successfully");
+                } else {
+                        return ResponseEntity.status(500).body("Failed to update risk score");
+                }
+        }
+
 }

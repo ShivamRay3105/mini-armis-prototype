@@ -75,7 +75,7 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok-mapstruct-binding</artifactId>
 			<version>0.2.0</version>
-			<scope>provided</scope> <!-- yeh sahi scope hai, compile mat daal -->
+			<scope>provided</scope> 
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

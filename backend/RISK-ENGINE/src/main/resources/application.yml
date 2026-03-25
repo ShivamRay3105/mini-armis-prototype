@@ -9,12 +9,34 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
       properties:
-        spring.json.trusted.packages: "*"
+        spring.json.trusted.packages: "com.sr.RISK_ENGINE.model"
         spring.json.value.default.type: "com.sr.RISK_ENGINE.model.AssetEvent"
         spring.json.use.type.headers: false
 
-  
 
+resilience4j:
+  retry:
+    instances:
+      assetService:
+        maxAttempts: 3
+        waitDuration: 1s
+        retryExceptions:
+          - org.springframework.web.client.RestClientException
+          - java.util.concurrent.TimeoutException
+  
+  timelimiter:
+    instances:
+      assetService:
+        timeoutDuration: 2s
+        cancelRunningFuture: true
+
+  # Optional: Basic Circuit Breaker
+  circuitbreaker:
+    instances:
+      assetService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
 # eureka:
 #   client:
 #     service-url:

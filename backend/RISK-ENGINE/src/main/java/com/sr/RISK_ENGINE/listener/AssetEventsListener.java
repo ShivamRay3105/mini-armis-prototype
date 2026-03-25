@@ -15,12 +15,8 @@ public class AssetEventsListener {
     private final RiskService riskService;
 
     @KafkaListener(topics = "asset-events", groupId = "risk-engine-group")
-    public AssetEvent consume(AssetEvent event) {
-
+    public void consume(AssetEvent event) {
         System.out.println("Received event: " + event);
-
         riskService.processEvent(event);
-        
-        return event;
     }
 }
