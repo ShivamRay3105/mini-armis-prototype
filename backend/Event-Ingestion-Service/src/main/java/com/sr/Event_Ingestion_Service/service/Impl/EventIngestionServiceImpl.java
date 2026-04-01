@@ -1,5 +1,6 @@
 package com.sr.Event_Ingestion_Service.service.Impl;
 
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
 import com.sr.Event_Ingestion_Service.Producer.AssetEventProducer;
@@ -11,6 +12,7 @@ import com.sr.Event_Ingestion_Service.model.AssetDTO;
 import com.sr.Event_Ingestion_Service.model.AssetEvent;
 import com.sr.Event_Ingestion_Service.model.Status;
 import com.sr.Event_Ingestion_Service.service.EventIngestionService;
+import com.sr.Event_Ingestion_Service.service.ResilientAssetClient;
 import com.sr.Event_Ingestion_Service.util.AssetEventMapper;
 
 import feign.FeignException;
@@ -28,16 +30,23 @@ public class EventIngestionServiceImpl implements EventIngestionService {
 
     private final AssetEventProducer assetEventProducer;
 
+    private final ResilientAssetClient resilientAssetClient;
+
     @Override
     public AssetDTO validateAsset(Long assetId) {
         log.info("Validating asset with id {}", assetId);
         try {
-            AssetDTO asset = assetServiceClient.getAssetById(assetId).getBody();
-            log.info("Asset lookup completed. Asset DTO:", asset);
+            // AssetDTO asset = assetServiceClient.getAssetById(assetId).getBody();
+            // 1. Get the wrapper
+            HttpEntity<AssetDTO> responseEntity = resilientAssetClient.checkAssetId(assetId);
+
+            // 2. Safely get the body
+            AssetDTO asset = (responseEntity != null) ? responseEntity.getBody() : null;
 
             if (asset == null) {
-                log.warn("Asset not found for id {}", assetId);
-                throw new AssetNotFoundException("Asset not found with id " + assetId);
+                log.warn("Asset not found or service unavailable for id {}", assetId);
+                // Throwing this ensures the event isn't ingested if we can't verify the asset
+                throw new AssetNotFoundException("Asset verification failed for id " + assetId);
             }
 
             if (asset.status() == Status.DECOMMISSIONED) {

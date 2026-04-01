@@ -183,6 +183,8 @@ Add logs:
 
 👉 Not `System.out.println` garbage
 
+use Mapped Diagnostic Context (MDC)
+
 ---
 
 # ✅ PHASE 4 — Metrics (HIGH VALUE)

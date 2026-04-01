@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.sr.RISK_ENGINE.Client.AssetServiceClient;
 import com.sr.RISK_ENGINE.Rules.RiskRule;
 import com.sr.RISK_ENGINE.Rules.Base.BaseScoreRule;
 import com.sr.RISK_ENGINE.Rules.Frequency.AuthFailureFrequencyRule;
@@ -15,6 +14,7 @@ import com.sr.RISK_ENGINE.Rules.Frequency.PortScanFrequencyRule;
 import com.sr.RISK_ENGINE.Rules.Sequence.AuthSequenceRule;
 import com.sr.RISK_ENGINE.Rules.Sequence.PrivilegeEscalationRule;
 import com.sr.RISK_ENGINE.Service.IdempotencyService;
+import com.sr.RISK_ENGINE.Service.ResilientAssetClient;
 import com.sr.RISK_ENGINE.Service.RiskService;
 import com.sr.RISK_ENGINE.State.AssetContext;
 import com.sr.RISK_ENGINE.dto.UpdateRiskRequest;
@@ -31,7 +31,7 @@ public class RiskServiceImpl implements RiskService {
 
     private final IdempotencyService idempotencyService;
 
-    private final AssetServiceClient assetService;
+    private final ResilientAssetClient resilientAssetClient;
 
     // Rule list
     private final List<RiskRule> rules = List.of(
@@ -108,23 +108,16 @@ public class RiskServiceImpl implements RiskService {
         return Math.max(score, 0);
     }
 
-    private void maybeUpdateAssetService(AssetContext assetContext, double oldScore) {
-        // we will be using 2 main conditions, delta change ( change in old timestamp
-        // and new timestamp, here right now i am using process time instead of event
-        // time)
-        // and second is risk tier change ( low, medium, high, critical) based on
-        // thresholds
-
+    public void maybeUpdateAssetService(AssetContext assetContext, double oldScore) {
         double newRiskScore = assetContext.getRiskScore();
-
         double delta = Math.abs(newRiskScore - oldScore);
+
         if (delta >= 10 || riskLevelChanged(oldScore, newRiskScore)) {
-
-            // call asset service to update risk score
             UpdateRiskRequest request = new UpdateRiskRequest(assetContext.getAssetId(), newRiskScore);
-            assetService.updateRiskScore(request);
-        }
 
+            // CALL THE BRIDGE: This triggers the Retry and Circuit Breaker logic
+            resilientAssetClient.sendUpdate(request);
+        }
     }
 
     private RiskLevel getRiskLevel(double score) {
