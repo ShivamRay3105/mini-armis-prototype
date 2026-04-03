@@ -1,6 +1,8 @@
 package com.sr.Event_Ingestion_Service.service.Impl;
 
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.sr.Event_Ingestion_Service.client.AssetServiceClient;
@@ -20,30 +22,6 @@ public class ResilientAssetClientImpl implements ResilientAssetClient {
 
     private final AssetServiceClient assetServiceClient;
 
-    // @Override
-    // @Retry(name = "assetService", fallbackMethod = "handleRetryFailure")
-    // @CircuitBreaker(name = "assetService", fallbackMethod =
-    // "fallbackCircuitBreaker")
-    // public void sendUpdate(UpdateRiskRequest request) {
-    // log.info("!!! RESILIENCE CHECK: Attempting Feign Call for Asset {}",
-    // request.assetId());
-    // feignClient.updateRiskScore(request);
-    // }
-
-    // @Override
-    // public void handleRetryFailure(UpdateRiskRequest request, Exception e) {
-    // log.error("RETRIES EXHAUSTED for Asset ID: {}. Final Score: {}. Error: {}",
-    // request.assetId(), request.newRiskScore(), e.getMessage());
-    // }
-
-    // @Override
-    // public void fallbackCircuitBreaker(UpdateRiskRequest request,
-    // CallNotPermittedException e) {
-    // log.warn("CIRCUIT OPEN: Skipping call for Asset {}. Service is down.",
-    // request.assetId());
-    // }
-    // }
-
     @Override
     @Retry(name = "assetService", fallbackMethod = "handleRetryFailure")
     @CircuitBreaker(name = "assetService", fallbackMethod = "fallbackCircuitBreaker")
@@ -54,11 +32,11 @@ public class ResilientAssetClientImpl implements ResilientAssetClient {
 
     public HttpEntity<AssetDTO> handleRetryFailure(Long assetId, Exception e) {
         log.error("RETRIES EXHAUSTED for Asset ID: {}. Error: {}", assetId, e.getMessage());
-        return new HttpEntity<>(null);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
     }
 
     public HttpEntity<AssetDTO> fallbackCircuitBreaker(Long assetId, CallNotPermittedException e) {
         log.warn("CIRCUIT OPEN: Skipping call for Asset {}. Asset Service is down.", assetId);
-        return new HttpEntity<>(null);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
     }
 }

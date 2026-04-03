@@ -1,7 +1,7 @@
-package com.sr.RISK_ENGINE.model;
+package com.sr.RISK_ENGINE.Enums;
 
 public enum RiskLevel {
-    
+
     LOW, // 0-19
     MEDIUM, // 20-49
     HIGH, // 50-79

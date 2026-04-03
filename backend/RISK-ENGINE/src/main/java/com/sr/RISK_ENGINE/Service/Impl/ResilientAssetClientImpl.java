@@ -25,6 +25,7 @@ public class ResilientAssetClientImpl implements ResilientAssetClient {
     public void sendUpdate(UpdateRiskRequest request) {
         log.info("!!! RESILIENCE CHECK: Attempting Feign Call for Asset {}", request.assetId());
         feignClient.updateRiskScore(request);
+        log.info("Risk Score updated successfully");
     }
 
     @Override

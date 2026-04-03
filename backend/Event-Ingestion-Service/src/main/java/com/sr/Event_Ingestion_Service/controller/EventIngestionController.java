@@ -23,8 +23,6 @@ public class EventIngestionController {
     @PostMapping("/stimulate")
     public ResponseEntity<EventResponse> stimulateEvent(@RequestBody EventRequest eventRequest) {
 
-        eventIngestionService.validateAsset(eventRequest.assetId());
-
         AssetEvent event = eventIngestionService.ingestEvent(eventRequest);
 
         EventResponse response = new EventResponse(event.eventId(), "ACCEPTED");

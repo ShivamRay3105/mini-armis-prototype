@@ -3,9 +3,9 @@ package com.sr.RISK_ENGINE.util;
 import java.time.Instant;
 import java.util.Deque;
 
+import com.sr.RISK_ENGINE.Enums.EventType;
 import com.sr.RISK_ENGINE.State.AssetContext;
 import com.sr.RISK_ENGINE.model.AssetEvent;
-import com.sr.RISK_ENGINE.model.EventType;
 
 public class EventUtils {
     AssetContext context;

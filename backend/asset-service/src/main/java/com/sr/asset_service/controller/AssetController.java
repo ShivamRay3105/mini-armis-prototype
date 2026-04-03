@@ -91,16 +91,12 @@ public class AssetController {
         // // // (CALLED BY RISK ENGINE)
         // // // -------------------------
         @PutMapping("/update-risk")
-        public ResponseEntity<String> updateRiskScore(
+        public ResponseEntity<Void> updateRiskScore(
                         @RequestBody UpdateRiskRequest request) {
 
-                boolean riskUpdated = assetService.updateRisk(request.assetId(), request.newRiskScore());
-
-                if (riskUpdated) {
-                        return ResponseEntity.ok("Risk score updated successfully");
-                } else {
-                        return ResponseEntity.status(500).body("Failed to update risk score");
-                }
+                assetService.updateRisk(request.assetId(), request.newRiskScore());
+                // .build() returns no body, which Feign loves for 'void' methods
+                return ResponseEntity.ok().build();
         }
 
 }

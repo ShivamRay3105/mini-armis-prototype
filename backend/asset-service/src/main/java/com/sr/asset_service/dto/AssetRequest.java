@@ -10,7 +10,7 @@ public record AssetRequest(
 
         @NotBlank String zone,
 
-        @NotBlank @Pattern(regexp = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(same pattern)){3}$", message = "Invalid ipAddress format ") String ipAddress) {
+        @NotBlank @Pattern(regexp = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}$", message = "Invalid ipAddress format") String ipAddress) {
     public AssetRequest {
         if (deviceType != null)
             deviceType = deviceType.trim().toUpperCase();

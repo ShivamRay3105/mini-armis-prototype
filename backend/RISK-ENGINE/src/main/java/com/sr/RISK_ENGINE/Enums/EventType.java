@@ -1,7 +1,6 @@
-package com.sr.RISK_ENGINE.model;
+package com.sr.RISK_ENGINE.Enums;
 
 public enum EventType {
-
     // Auth Layer
     AUTH_SUCCESS,
     AUTH_FAILURE,

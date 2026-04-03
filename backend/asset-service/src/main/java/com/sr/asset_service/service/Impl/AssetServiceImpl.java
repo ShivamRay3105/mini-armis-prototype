@@ -76,6 +76,7 @@ import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sr.asset_service.Exception.DuplicateResourceException;
 import com.sr.asset_service.Exception.ResourceNotFoundException;
@@ -145,17 +146,17 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public boolean updateRisk(Long assetId, double newRiskScore) {
-        boolean updatedSuccessfully = false;
+    @Transactional
+    public void updateRisk(Long assetId, double newRiskScore) {
         if (assetId == null) {
             throw new IllegalArgumentException("Asset ID cannot be null");
         }
+
         Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + assetId));
 
         asset.setRiskScore((int) Math.round(newRiskScore));
         assetRepository.save(asset);
-        updatedSuccessfully = true;
-        return updatedSuccessfully;
+
     }
 }

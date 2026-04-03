@@ -1,5 +1,6 @@
 package com.sr.Event_Ingestion_Service.service.Impl;
 
+import org.slf4j.MDC;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +35,9 @@ public class EventIngestionServiceImpl implements EventIngestionService {
 
     @Override
     public AssetDTO validateAsset(Long assetId) {
-        log.info("Validating asset with id {}", assetId);
+
         try {
+            log.info("Validating asset with id {}", assetId);
             // AssetDTO asset = assetServiceClient.getAssetById(assetId).getBody();
             // 1. Get the wrapper
             HttpEntity<AssetDTO> responseEntity = resilientAssetClient.checkAssetId(assetId);
@@ -46,35 +48,47 @@ public class EventIngestionServiceImpl implements EventIngestionService {
             if (asset == null) {
                 log.warn("Asset not found or service unavailable for id {}", assetId);
                 // Throwing this ensures the event isn't ingested if we can't verify the asset
-                throw new AssetNotFoundException("Asset verification failed for id " + assetId);
+                throw new AssetNotFoundException("Asset verification failed");
             }
 
             if (asset.status() == Status.DECOMMISSIONED) {
                 log.warn("Asset is decommissioned for id {}", assetId);
-                throw new AssetDecommissionedException("Asset is decommissioned with id " + assetId);
+                throw new AssetDecommissionedException("Asset is decommissioned");
             }
 
-            assetServiceClient.updateLastSeen(assetId);
-            log.info("Successfully updated last seen for asset id {}", assetId);
+            try {
+                assetServiceClient.updateLastSeen(assetId);
+            } catch (Exception e) {
+                log.warn("Failed to update last seen : {}", e.getMessage());
+            }
+            log.info("Successfully updated last seen");
             log.info("Asset details: {}", asset);
             return asset;
 
         } catch (FeignException.NotFound ex) {
-            log.warn("Received 404 from asset-service for id {}", assetId);
+            log.warn("Received 404 from asset-service");
             throw new AssetNotFoundException("Asset not found with id " + assetId);
         }
     }
 
     @Override
     public AssetEvent ingestEvent(EventRequest eventRequest) {
-        log.info("Ingesting event for assetId {}", eventRequest.assetId());
-        AssetEvent event = assetEventMapper.mapEventRequestToAssetEvent(eventRequest,
-                validateAsset(eventRequest.assetId()));
-        // here above, asset is passed through with validate function
-        log.info("Event created with id {}", event.eventId());
-        assetEventProducer.sendEvent(event);
-        log.info("Event sent to Kafka topic for assetId {}", eventRequest.assetId());
-        return event;
-    }
 
+        MDC.put("assetId", String.valueOf(eventRequest.assetId()));
+
+        try {
+
+            log.info("Ingesting event for assetId {}", eventRequest.assetId());
+            AssetEvent event = assetEventMapper.mapEventRequestToAssetEvent(eventRequest,
+                    validateAsset(eventRequest.assetId()));
+            // here above, asset is passed through with validate function
+            log.info("Event created with id {}", event.eventId());
+            assetEventProducer.sendEvent(event);
+            log.info("Event sent to Kafka topic");
+            return event;
+        } finally {
+            MDC.clear();
+        }
+
+    }
 }

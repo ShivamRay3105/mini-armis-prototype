@@ -2,10 +2,10 @@ package com.sr.RISK_ENGINE.Rules.Base;
 
 import java.util.Deque;
 
+import com.sr.RISK_ENGINE.Enums.EventType;
 import com.sr.RISK_ENGINE.Rules.RiskRule;
 import com.sr.RISK_ENGINE.State.AssetContext;
 import com.sr.RISK_ENGINE.model.AssetEvent;
-import com.sr.RISK_ENGINE.model.EventType;
 
 public class BaseScoreRule implements RiskRule {
     @Override

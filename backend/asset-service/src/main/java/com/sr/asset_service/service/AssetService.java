@@ -20,6 +20,6 @@ public interface AssetService {
 
     Asset updateAssetLastSeen(Long id);
 
-    boolean updateRisk(Long assetId, double newRiskScore);
+    void updateRisk(Long assetId, double newRiskScore);
 
 }
