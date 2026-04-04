@@ -3,11 +3,14 @@ package com.sr.RISK_ENGINE.Service.Impl;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.sr.RISK_ENGINE.Enums.EventType;
 import com.sr.RISK_ENGINE.Enums.RiskLevel;
 import com.sr.RISK_ENGINE.Rules.RiskRule;
 import com.sr.RISK_ENGINE.Rules.Base.BaseScoreRule;
@@ -100,7 +103,7 @@ public class RiskServiceImpl implements RiskService {
             // SAVE BACK TO REDIS
             log.info("Saving updated context back to Redis for asset {}", event.assetId());
             try {
-                assetTemplate.opsForValue().set(key, assetContext, Duration.ofMinutes(15));
+                assetTemplate.opsForValue().set(key, assetContext, Duration.ofMinutes(45));
             } catch (Exception e) {
                 log.error("Failed to save context to Redis for asset {}: {}", event.assetId(), e.getMessage());
                 // Note: If this fails, the next event will start from a fresh context.
@@ -108,7 +111,7 @@ public class RiskServiceImpl implements RiskService {
 
             // Push to Asset Service (only if needed)
             log.info("Checking if asset service update is needed for asset {}", event.assetId());
-            maybeUpdateAssetService(assetContext, oldScore);
+            maybeUpdateAssetService(assetContext, oldScore, event);
 
         } catch (Exception e) {
             log.error("Error processing event {}: {}", event.eventId(), e.getMessage());
@@ -118,23 +121,31 @@ public class RiskServiceImpl implements RiskService {
     }
 
     private double calculateRisk(AssetContext assetContext) {
-
-        double score = 0;
+        // 1. Reset current rule score to 0.0
+        double currentRuleScore = 0.0;
 
         log.info("Applying rules for asset {}", assetContext.getAssetId());
         for (RiskRule rule : rules) {
-            score += rule.evaluate(assetContext);
+            currentRuleScore += rule.evaluate(assetContext);
         }
-        log.info("Rules applied for asset {}, intermediate score: {}", assetContext.getAssetId(), score);
+        log.info("Rules applied for asset {}, current rule score: {}", assetContext.getAssetId(), currentRuleScore);
 
-        // (later) decay rules
-        log.info("Applying decay for asset {}", assetContext.getAssetId());
-        score = applyDecay(score, assetContext);
-        log.info("Decay applied for asset {}, final score: {}", assetContext.getAssetId(), score);
+        // 2. Calculate what the PREVIOUS score would be after decay
+        log.info("Calculating potential decay for asset {}", assetContext.getAssetId());
+        double decayedScore = applyDecay(assetContext.getRiskScore(), assetContext);
 
-        score = Math.min(score, 100);
-        log.info("Final risk score after calculating the Risk for asset {}: {}", assetContext.getAssetId(), score);
-        return score;
+        // 3. THE MASTER LOGIC: Use whichever is higher.
+        // If the rules are spiking (attack), rules win.
+        // If the rules are 0 (no attack), the decayed historical score wins.
+        double finalScore = Math.max(currentRuleScore, decayedScore);
+
+        // 4. Cap at 100 and 0
+        finalScore = Math.min(Math.max(finalScore, 0.0), 100.0);
+
+        log.info("Asset {}: Rule Score: {}, Decayed Score: {}, Final Output: {}",
+                assetContext.getAssetId(), currentRuleScore, decayedScore, finalScore);
+
+        return finalScore;
     }
 
     private double applyDecay(double score, AssetContext assetContext) {
@@ -148,16 +159,14 @@ public class RiskServiceImpl implements RiskService {
             log.info("First event for asset or no previous state. Skipping decay.");
             return score;
         }
-
-        AssetEvent lastEvent = assetContext.getRecentEvents().peekLast();
-        if (lastEvent == null)
-            return score;
-        Instant latestEventTime = lastEvent.timestamp();
-
+        if (assetContext.isRequiresManualReset()) {
+            // If locked, it cannot decay below 80.0
+            return Math.max(score, 80.0);
+        }
         // 3. Calculate decay based on the gap between the LAST update and THIS event
         long seconds = Duration.between(
                 assetContext.getLastUpdated(),
-                latestEventTime).toSeconds();
+                Instant.now()).toSeconds();
         double decay = seconds * 0.1;
         log.info("Decaying score by {} based on {} seconds of inactivity", decay, seconds);
         score -= decay;
@@ -165,11 +174,29 @@ public class RiskServiceImpl implements RiskService {
         return Math.max(score, 0);
     }
 
-    public void maybeUpdateAssetService(AssetContext assetContext, double oldScore) {
+    public void maybeUpdateAssetService(AssetContext assetContext, double oldScore, AssetEvent currentEvent) {
+
         double newRiskScore = assetContext.getRiskScore();
+
         double delta = Math.abs(newRiskScore - oldScore);
 
-        if (delta >= 10 || riskLevelChanged(oldScore, newRiskScore)) {
+        // Always update if the score has finally hit zero
+        boolean isFinalZero = (newRiskScore == 0 && oldScore > 0);
+
+        // Check for "Atomic" (Immediate) Alert triggers
+        boolean isAtomicAlert = false;
+        if (currentEvent != null) {
+            isAtomicAlert = List.of(
+                    EventType.UNAUTHORIZED_ACCESS,
+                    EventType.PRIVILEGE_ESCALATION).contains(currentEvent.eventType());
+        }
+        // Activate the Sticky Floor if score hits Critical
+        if (newRiskScore >= 80 && !assetContext.isRequiresManualReset()) {
+            log.warn("STICKY FLOOR ACTIVATED: Asset {} is now locked at Critical risk.", assetContext.getAssetId());
+            assetContext.setRequiresManualReset(true);
+        }
+
+        if (delta >= 10 || riskLevelChanged(oldScore, newRiskScore) || isAtomicAlert || isFinalZero) {
             log.info(
                     "Risk level change detected for asset {}. Old Score: {}, New Score: {}. Preparing to update asset service.",
                     assetContext.getAssetId(), oldScore, newRiskScore);
@@ -181,13 +208,17 @@ public class RiskServiceImpl implements RiskService {
             resilientAssetClient.sendUpdate(request);
 
             // If newRiskScore is dangerous, send a RiskEvent to Kafka
-            if (newRiskScore >= 70) {
+            if (currentEvent != null && (newRiskScore >= 70 || isAtomicAlert)) {
+                String reason = isAtomicAlert ? "CRITICAL EVENT: " + currentEvent.eventType()
+                        : "Risk Threshold Exceeded";
+                log.info("Risk score {} for asset {} exceeds threshold. Sending alert. Reason: {}", newRiskScore,
+                        assetContext.getAssetId(), reason);
                 RiskEvent riskEvent = new RiskEvent(
                         UUID.randomUUID(),
                         assetContext.getAssetId(),
                         newRiskScore,
                         getRiskLevel(newRiskScore).toString(),
-                        "Anomalous behavior threshold exceeded. Manual audit required.",
+                        reason,
                         Instant.now());
                 riskEventProducer.sendRiskAlert(riskEvent);
             }
@@ -207,5 +238,50 @@ public class RiskServiceImpl implements RiskService {
     private boolean riskLevelChanged(double oldScore, double newScore) {
         // helper method
         return getRiskLevel(oldScore) != getRiskLevel(newScore);
+    }
+
+    @Scheduled(fixedRate = 10000) // every 10 seconds
+    public void performGlobalDecay() {
+        log.info("--- STARTING SCHEDULED GLOBAL DECAY ---");
+
+        // 1. Get all keys from Redis starting with "asset:"
+        Set<String> keys = assetTemplate.keys("asset:*");
+
+        if (keys == null || keys.isEmpty()) {
+            log.info("No active assets found in Redis for decay.");
+            return;
+        }
+        for (String key : keys) {
+            try {
+                AssetContext assetContext = assetTemplate.opsForValue().get(key);
+
+                if (assetContext == null)
+                    continue;
+
+                // If the score is already 0, we don't need to decay it further
+                if (assetContext.getRiskScore() <= 0)
+                    continue;
+
+                double oldScore = assetContext.getRiskScore();
+
+                // 2. Re-calculate risk (this calls applyDecay inside)
+                double newScore = calculateRisk(assetContext);
+
+                // 3. Only update if the score actually changed
+                if (newScore != oldScore) {
+                    log.info("Decaying Asset {}: {} -> {}", assetContext.getAssetId(), oldScore, newScore);
+                    assetContext.updateRisk(newScore, Instant.now());
+
+                    // Save the updated state back to Redis
+                    assetTemplate.opsForValue().set(key, assetContext, java.time.Duration.ofMinutes(45));
+
+                    // 4. Update the Asset Service and Alert Service if needed
+                    maybeUpdateAssetService(assetContext, oldScore, null);
+                }
+            } catch (Exception e) {
+                log.error("Error during scheduled decay for key {}: {}", key, e.getMessage());
+            }
+        }
+        log.info("--- GLOBAL DECAY FINISHED ---");
     }
 }

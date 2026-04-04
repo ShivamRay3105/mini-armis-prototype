@@ -14,6 +14,20 @@ public class AssetContext {
     private double riskScore;
     private final Deque<AssetEvent> recentEvents; // Stay final!
     private Instant lastUpdated;
+    private boolean requiresManualReset = false;
+
+    public boolean isRequiresManualReset() {
+        return requiresManualReset;
+    }
+
+    public void setRequiresManualReset(boolean requiresManualReset) {
+        this.requiresManualReset = requiresManualReset;
+    }
+
+    public void resetLock() {
+        this.requiresManualReset = false;
+        this.lastUpdated = Instant.now();
+    }
 
     // Tell Jackson to use THIS constructor when reading from Redis
     @JsonCreator

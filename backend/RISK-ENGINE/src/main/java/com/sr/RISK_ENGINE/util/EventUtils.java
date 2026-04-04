@@ -2,23 +2,43 @@ package com.sr.RISK_ENGINE.util;
 
 import java.time.Instant;
 import java.util.Deque;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.sr.RISK_ENGINE.Enums.EventType;
 import com.sr.RISK_ENGINE.State.AssetContext;
 import com.sr.RISK_ENGINE.model.AssetEvent;
 
 public class EventUtils {
-    AssetContext context;
-    Deque<AssetEvent> events;
+    private final Deque<AssetEvent> allEvents;
+    private final List<AssetEvent> freshEvents;
+    
+    // Define your "Freshness" window here (e.g., 5 minutes)
+    private static final int FRESHNESS_THRESHOLD_SECONDS = 300; 
 
     public EventUtils(AssetContext context) {
-        this.context = context;
-        this.events = context.getRecentEvents();
+        this.allEvents = context.getRecentEvents();
+        // Global Filter: Only look at events from the last 5 minutes
+        Instant cutoff = Instant.now().minusSeconds(FRESHNESS_THRESHOLD_SECONDS);
+        
+        this.freshEvents = allEvents.stream()
+                .filter(e -> e.timestamp().isAfter(cutoff))
+                .collect(Collectors.toList());
     }
 
-    public int count(Deque<AssetEvent> events, EventType eventType) {
+    /**
+     * Rules should call this to get events that are actually "active"
+     */
+    public List<AssetEvent> getFreshEvents() {
+        return freshEvents;
+    }
+
+    /**
+     * Updated count to use the fresh list
+     */
+    public int countFresh(EventType eventType) {
         int count = 0;
-        for (AssetEvent event : events) {
+        for (AssetEvent event : freshEvents) {
             if (event.eventType() == eventType) {
                 count++;
             }
@@ -26,39 +46,17 @@ public class EventUtils {
         return count;
     }
 
-    public int findRecent(Deque<AssetEvent> events, EventType eventType, int withinSeconds,
-            Instant currentEventTimestamp) {
+    /**
+     * Precise recent window check within the already fresh list
+     */
+    public int findRecent(EventType eventType, int withinSeconds) {
         int count = 0;
-        Instant startWindow = currentEventTimestamp.minusSeconds(withinSeconds);
-        for (AssetEvent event : events) {
+        Instant startWindow = Instant.now().minusSeconds(withinSeconds);
+        for (AssetEvent event : freshEvents) {
             if (event.eventType() == eventType && event.timestamp().isAfter(startWindow)) {
                 count++;
             }
         }
         return count;
     }
-
-    // public boolean hasSequence(Deque<AssetEvent> events, EventType eventTypeA,
-    // EventType eventTypeB, int timeWindow) {
-    // Instant currentTime = Instant.now();
-    // for (AssetEvent event : events) {
-    // if (event.eventType() == eventTypeA) {
-    // if (event.timestamp().isAfter(currentTime.minusSeconds(timeWindow))) {
-    // // Look for the next event of type B within the time window
-    // for (AssetEvent nextEvent : events) {
-    // if (nextEvent.eventType() == eventTypeB &&
-    // nextEvent.timestamp().isAfter(event.timestamp())) {
-    // long timeDifference = Duration.between(event.timestamp(),
-    // nextEvent.timestamp())
-    // .toSeconds();
-    // if (timeDifference <= timeWindow) {
-    // return true;
-    // }
-    // }
-    // }
-    // }
-    // }
-    // }
-    // return false;
-    // }
 }
