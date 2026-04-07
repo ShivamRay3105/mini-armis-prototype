@@ -2,6 +2,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ApiGatewayApplication",
+            "request": "launch",
+            "mainClass": "com.sr.API_GATEWAY.ApiGatewayApplication",
+            "projectName": "API-GATEWAY"
+        },
+        {
+            "type": "java",
+            "name": "AlertServiceApplication",
+            "request": "launch",
+            "mainClass": "com.sr.ALERT_SERVICE.AlertServiceApplication",
+            "projectName": "ALERT-SERVICE"
+        },
+        {
+            "type": "java",
+            "name": "AuthServiceApplication",
+            "request": "launch",
+            "mainClass": "com.sr.AUTH_SERVICE.AuthServiceApplication",
+            "projectName": "AUTH-SERVICE"
+        },
+        {
+            "type": "java",
             "name": "RiskEngineApplication",
             "request": "launch",
             "mainClass": "com.sr.RISK_ENGINE.RiskEngineApplication",

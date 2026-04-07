@@ -1,0 +1,34 @@
+server:
+  port: 8100
+
+spring:
+  application:
+    name: AUTH-SERVICE
+  datasource:
+    # Points to your LOCAL pgAdmin database
+    url: jdbc:postgresql://localhost:5432/sentinel-auth
+    username: postgres 
+    password: 1989221134
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  data:
+    redis:
+      # Points to your DOCKER Redis container
+      host: localhost
+      port: 6379
+
+jwt:
+  # Generate a long random string for this
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  access-token-expiration: 900000 # 15 minutes
+  refresh-token-expiration: 604800000 # 7 days
+
+eureka:
+  instance:
+    prefer-ip-address: true 
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

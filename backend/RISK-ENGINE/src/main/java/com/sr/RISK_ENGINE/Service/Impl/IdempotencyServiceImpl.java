@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class IdempotencyServiceImpl implements IdempotencyService {
 
     private final StringRedisTemplate redisTemplate;
-    private static final String KEY_PREFIX = "event_id:";
+    private static final String KEY_PREFIX = "RISK:IDEMPOTENCY:";
 
     @Override
     public boolean isDuplicate(UUID eventId) {

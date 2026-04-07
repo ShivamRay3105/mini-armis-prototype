@@ -1,0 +1,47 @@
+server:
+  port: 8765
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      httpclient:
+        use-resolved-address: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # 1. AUTH SERVICE
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+
+        # 2. ASSET SERVICE
+        # Maps: /api/v1/assets/**
+        - id: asset-service
+          uri: lb://ASSET-SERVICE
+          predicates:
+            - Path=/api/v1/assets/**
+
+        # 3. ALERT SERVICE
+        # Maps: /api/alerts/**
+        - id: alert-service
+          uri: lb://ALERT-SERVICE
+          predicates:
+            - Path=/api/alerts/**
+
+        # 4. EVENT INGESTION SERVICE
+        # Maps: /api/events/**
+        - id: event-ingestion-service
+          uri: lb://EVENT-INGESTION-SERVICE
+          predicates:
+            - Path=/api/events/**
+eureka:
+  instance:
+    prefer-ip-address: true  # <--- THIS IS THE CRITICAL LINE
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

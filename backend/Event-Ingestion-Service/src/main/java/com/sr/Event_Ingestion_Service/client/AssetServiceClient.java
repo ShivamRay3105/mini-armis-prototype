@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.sr.Event_Ingestion_Service.model.AssetDTO;
 
-@FeignClient(name = "asset-service")
+@FeignClient(name = "ASSET-SERVICE")
 public interface AssetServiceClient {
 
     @GetMapping("/api/v1/assets/{assetId}")

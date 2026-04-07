@@ -55,7 +55,9 @@ resilience4j:
         waitDurationInOpenState: 10s
         permitted-number-of-calls-in-half-open-state: 3
 
-# eureka:
-#   client:
-#     service-url:
-#       defaultZone: http://localhost:8761/eureka/
+eureka:
+  instance:
+    prefer-ip-address: true 
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

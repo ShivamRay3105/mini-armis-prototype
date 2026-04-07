@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: ALERT-SERVICE
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: alert-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        '[spring.deserializer.value.delegate.class]': org.springframework.kafka.support.serializer.JsonDeserializer
+        '[spring.json.trusted.packages]': "com.sr.ALERT_SERVICE.db"
+        '[spring.json.value.default.type]': "com.sr.ALERT_SERVICE.db.RiskEvent"
+        '[spring.json.use.type.headers]': false
+  
+
+  datasource:
+
+    # 'localhost' works because we mapped the ports in docker-compose
+    url: jdbc:postgresql://localhost:5432/sentinel-alert
+    username: postgres
+    password: 1989221134
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # This creates the tables automatically based on your @Entity classes
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8200
+
+eureka:
+  instance:
+    prefer-ip-address: true  # This is the magic line
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.sr.RISK_ENGINE.dto.UpdateRiskRequest;
 
-@FeignClient(name = "asset-service")
+@FeignClient(name = "ASSET-SERVICE")
 public interface AssetServiceClient {
 
     @PutMapping("/api/v1/assets/update-risk")

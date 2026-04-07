@@ -14,3 +14,10 @@ spring:
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%X{assetId}] %logger{36} - %msg%n"
+
+eureka:
+  instance:
+    prefer-ip-address: true  
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
