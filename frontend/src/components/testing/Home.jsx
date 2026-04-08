@@ -27,9 +27,13 @@ const Home = () => {
             <Link to="/lounge">Go to the Lounge</Link>
             <br />
             <Link to="/linkpage">Go to the link page</Link>
+            <br />
+            <Link to="/security_analyst">Go to the Security Analyst page</Link>
+            <br />
             <div className="flexGrow">
                 <button onClick={logout}>Sign Out</button>
             </div>
+
         </section>
     )
 }

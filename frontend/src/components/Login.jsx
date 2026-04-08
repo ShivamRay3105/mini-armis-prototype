@@ -38,20 +38,7 @@ const Login = () => {
           withCredentials: true,
         }
       );
-      console.log(JSON.stringify(response?.data));
-      //console.log(JSON.stringify(response));
-      //   const accessToken = response?.data?.token;
-      //   const roles = response?.data?.role;
-
-      // setAuth({ username, password, roles, accessToken });
-
-      //   const accessToken = response.headers["authorization"]?.split(" ")[1];
-      //   const refreshToken = response.headers["x-refresh-token"];
-      //   const userId = response.headers["x-user-id"];
-      //   const roles = response?.data?.role;
-
-      //   setAuth({  userId,username, roles, accessToken, refreshToken });
-
+     
         const {
           accessToken,
           roles,
@@ -63,15 +50,6 @@ const Login = () => {
           accessToken: accessToken,
           roles: Array.isArray(roles) ? roles : [roles], // <-- ensure roles is always an array
         });
-
-
-    //   const { token, role, username: resUsername } = response.data;
-
-    //   setAuth({
-    //     username: resUsername,
-    //     roles: role,
-    //     accessToken: token,
-    //   });
 
       setUsername("");
       setPassword("");

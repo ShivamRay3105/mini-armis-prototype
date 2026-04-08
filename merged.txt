@@ -1,0 +1,1019 @@
+
+--
+frontend/src/api/axios.js
+--
+import axios from "axios";
+const BASE_URL = "http://localhost:8765";
+
+const api = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true, 
+});
+
+export const axiosPrivate = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+});
+
+export default api;
+
+--
+frontend/src/App.css
+--
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+--
+frontend/src/App.jsx
+--
+import "./App.css";
+import { Route, Routes } from "react-router-dom";
+import Layout from "./layout/Layout";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import LinkPage from "./components/testing/LinkPage";
+import Unauthorized from "./components/testing/Unauthorised";
+import Editor from "./components/testing/Editor";
+import RequireAuth from "./components/RequireAuth";
+import Admin from "./components/testing/Admin";
+import Lounge from "./components/testing/Lounge";
+import Missing from "./components/testing/Missing";
+import Home from "./components/testing/Home";
+
+// Standard Spring Security roles usually come with the 'ROLE_' prefix.
+// Your backend log showed: "roles":["ROLE_USER"]
+const ROLES = {
+    'User': 'ROLE_USER',
+    'Editor': 'ROLE_EDITOR',
+    'Admin': 'ROLE_ADMIN'
+};
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        {/* public routes */}
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="linkpage" element={<LinkPage />} />
+        <Route path="unauthorized" element={<Unauthorized />} />
+
+        {/* Protected Routes */}
+        {/* Home is accessible by anyone with a valid role */}
+        <Route element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Editor, ROLES.Admin]} />}>
+          <Route path="/" element={<Home />} />
+        </Route>
+
+        <Route element={<RequireAuth allowedRoles={[ROLES.Editor]} />}>
+          <Route path="editor" element={<Editor />} />
+        </Route>
+
+        <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+          <Route path="admin" element={<Admin />} />
+        </Route>
+
+        <Route element={<RequireAuth allowedRoles={[ROLES.Editor, ROLES.Admin,ROLES.User]} />}>
+          <Route path="lounge" element={<Lounge />} />
+        </Route>
+
+        {/* catch all */}
+        <Route path="*" element={<Missing />} />
+      </Route>
+    </Routes>
+  );
+}
+
+export default App;
+
+--
+frontend/src/assets/react.svg
+--
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+
+--
+frontend/src/components/Dashboard/AssetDashboard.jsx
+--
+import React, { useEffect, useState } from 'react';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+
+const AssetDashboard = () => {
+  const [assets, setAssets] = useState([]);
+  const axiosPrivate = useAxiosPrivate();
+
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const response = await axiosPrivate.get('/asset-service/api/assets');
+        setAssets(response.data);
+      } catch (err) { console.error("Access Denied or Server Error", err); }
+    };
+    fetchAssets();
+  }, []);
+
+  const getRiskColor = (score) => {
+    if (score > 75) return 'text-red-500 border-red-500';
+    if (score > 40) return 'text-yellow-500 border-yellow-500';
+    return 'text-green-500 border-green-500';
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+      {assets.map(asset => (
+        <div key={asset.id} className={`p-4 bg-slate-800 rounded border-t-4 ${getRiskColor(asset.riskScore)}`}>
+          <h4 className="text-lg font-semibold">{asset.name}</h4>
+          <p className="text-slate-400 text-xs">{asset.macAddress}</p>
+          <div className="mt-4 flex justify-between items-end">
+            <span className="text-2xl font-bold">{asset.riskScore}</span>
+            <span className="text-[10px] uppercase tracking-tighter">Risk Score</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+--
+frontend/src/components/Login.jsx
+--
+import { useRef, useState, useEffect } from "react";
+import useAuth from "../hooks/useAuth";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import axios from "../api/axios";
+
+const LOGIN_URL = "/auth-service/auth/login";
+
+const Login = () => {
+    const { setAuth } = useAuth();
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const userRef = useRef();
+    const errRef = useRef();
+
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [errMsg, setErrMsg] = useState("");
+
+    useEffect(() => {
+        userRef.current.focus();
+    }, []);
+
+    useEffect(() => {
+        setErrMsg("");
+    }, [username, password]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await axios.post(
+                LOGIN_URL,
+                JSON.stringify({ username, password }),
+                {
+                    headers: { "Content-Type": "application/json" },
+                    withCredentials: true,
+                }
+            );
+
+//            if (import.meta.env.MODE === 'development') {
+//     console.log("Server Response:", response?.data);
+// }
+
+            const { accessToken, roles, username: resUsername } = response.data;
+
+            // We keep the roles exactly as they come (e.g., "ROLE_USER") 
+            // to match the updated ROLES constant in App.jsx
+            setAuth({
+                username: resUsername,
+                accessToken: accessToken,
+                roles: Array.isArray(roles) ? roles : [roles],
+            });
+
+            setUsername("");
+            setPassword("");
+
+            // Redirect back to where the user was trying to go, or home
+            const from = location.state?.from?.pathname || "/";
+            navigate(from, { replace: true });
+
+        } catch (err) {
+            if (!err?.response) {
+                setErrMsg("No Server Response");
+            } else if (err.response?.status === 400) {
+                setErrMsg("Missing Username or Password");
+            } else if (err.response?.status === 401) {
+                setErrMsg("Unauthorized: Invalid Credentials");
+            } else {
+                setErrMsg("Login Failed");
+            }
+            errRef.current.focus();
+        }
+    };
+
+    return (
+        <section>
+            <p
+                ref={errRef}
+                className={errMsg ? "errmsg" : "offscreen"}
+                aria-live="assertive"
+            >
+                {errMsg}
+            </p>
+            <h1>Sign In</h1>
+            <form onSubmit={handleSubmit}>
+                <label htmlFor="username">Username:</label>
+                <input
+                    type="text"
+                    id="username"
+                    ref={userRef}
+                    autoComplete="off"
+                    onChange={(e) => setUsername(e.target.value)}
+                    value={username}
+                    required
+                />
+
+                <label htmlFor="password">Password:</label>
+                <input
+                    type="password"
+                    id="password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
+                    required
+                />
+                <button>Sign In</button>
+            </form>
+            <p>
+                Need an Account?<br />
+                <span className="line">
+                    <Link to="/register">Sign Up</Link>
+                </span>
+            </p>
+        </section>
+    );
+};
+
+export default Login;
+
+--
+frontend/src/components/Register.jsx
+--
+import { useRef, useState, useEffect } from "react";
+import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from '../api/axios';
+import { Link } from "react-router-dom";
+
+const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
+const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const REGISTER_URL = '/auth-service/auth/register';
+
+const Register = () => {
+    const userRef = useRef();
+    const errRef = useRef();
+
+    const [username, setUsername] = useState('');
+    const [validName, setValidName] = useState(false);
+    const [userFocus, setUserFocus] = useState(false);
+
+    const [password, setPassword] = useState('');
+    const [validPassword, setValidPassword] = useState(false);
+    const [passwordFocus, setPasswordFocus] = useState(false);
+
+    const [matchPassword, setMatchPassword] = useState('');
+    const [validMatch, setValidMatch] = useState(false);
+    const [matchFocus, setMatchFocus] = useState(false);
+
+    const [errMsg, setErrMsg] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    useEffect(() => {
+        userRef.current.focus();
+    }, [])
+
+    useEffect(() => {
+        setValidName(USER_REGEX.test(username));
+    }, [username])
+
+    useEffect(() => {
+        setValidPassword(PWD_REGEX.test(password));
+        setValidMatch(password === matchPassword);
+    }, [password, matchPassword])
+
+    useEffect(() => {
+        setErrMsg('');
+    }, [username, password, matchPassword])
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        // if button enabled with JS hack
+        const v1 = USER_REGEX.test(username);
+        const v2 = PWD_REGEX.test(password);
+        if (!v1 || !v2) {
+            setErrMsg("Invalid Entry");
+            return;
+        }
+        try {
+            const response = await axios.post(REGISTER_URL,
+                JSON.stringify({ username, password }),
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                }
+            );
+            // TODO: remove console.logs before deployment
+            console.log(JSON.stringify(response?.data));
+            //console.log(JSON.stringify(response))
+            setSuccess(true);
+            //clear state and controlled inputs
+            setUsername('');
+            setPassword('');
+            setMatchPassword('');
+        } catch (err) {
+            if (!err?.response) {
+                setErrMsg('No Server Response');
+            } else if (err.response?.status === 409) {
+                setErrMsg('Username Taken');
+            } else {
+                setErrMsg('Registration Failed')
+            }
+            errRef.current.focus();
+        }
+    }
+
+    return (
+        <>
+            {success ? (
+                <section>
+                    <h1>Success!</h1>
+                    <p>
+                        <a href="#">Sign In</a>
+                    </p>
+                </section>
+            ) : (
+                <section>
+                    <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+                    <h1>Register</h1>
+                    <form onSubmit={handleSubmit}>
+                        <label htmlFor="username">
+                            Username:
+                            <FontAwesomeIcon icon={faCheck} className={validName ? "valid" : "hide"} />
+                            <FontAwesomeIcon icon={faTimes} className={validName || !username ? "hide" : "invalid"} />
+                        </label>
+                        <input
+                            type="text"
+                            id="username"
+                            ref={userRef}
+                            autoComplete="off"
+                            onChange={(e) => setUsername(e.target.value)}
+                            value={username}
+                            required
+                            aria-invalid={validName ? "false" : "true"}
+                            aria-describedby="uidnote"
+                            onFocus={() => setUserFocus(true)}
+                            onBlur={() => setUserFocus(false)}
+                        />
+                        <p id="uidnote" className={userFocus && username && !validName ? "instructions" : "offscreen"}>
+                            <FontAwesomeIcon icon={faInfoCircle} />
+                            4 to 24 characters.<br />
+                            Must begin with a letter.<br />
+                            Letters, numbers, underscores, hyphens allowed.
+                        </p>
+
+
+                        <label htmlFor="password">
+                            Password:
+                            <FontAwesomeIcon icon={faCheck} className={validPassword ? "valid" : "hide"} />
+                            <FontAwesomeIcon icon={faTimes} className={validPassword || !password ? "hide" : "invalid"} />
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            onChange={(e) => setPassword(e.target.value)}
+                            value={password}
+                            required
+                            aria-invalid={validPassword ? "false" : "true"}
+                            aria-describedby="passwordnote"
+                            onFocus={() => setPasswordFocus(true)}
+                            onBlur={() => setPasswordFocus(false)}
+                        />
+                        <p id="passwordnote" className={passwordFocus && !validPassword ? "instructions" : "offscreen"}>
+                            <FontAwesomeIcon icon={faInfoCircle} />
+                            8 to 24 characters.<br />
+                            Must include uppercase and lowercase letters, a number and a special character.<br />
+                            Allowed special characters: <span aria-label="exclamation mark">!</span> <span aria-label="at symbol">@</span> <span aria-label="hashtag">#</span> <span aria-label="dollar sign">$</span> <span aria-label="percent">%</span>
+                        </p>
+
+
+                        <label htmlFor="confirm_password">
+                            Confirm Password:
+                            <FontAwesomeIcon icon={faCheck} className={validMatch && matchPassword ? "valid" : "hide"} />
+                            <FontAwesomeIcon icon={faTimes} className={validMatch || !matchPassword ? "hide" : "invalid"} />
+                        </label>
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            onChange={(e) => setMatchPassword(e.target.value)}
+                            value={matchPassword}
+                            required
+                            aria-invalid={validMatch ? "false" : "true"}
+                            aria-describedby="confirmnote"
+                            onFocus={() => setMatchFocus(true)}
+                            onBlur={() => setMatchFocus(false)}
+                        />
+                        <p id="confirmnote" className={matchFocus && !validMatch ? "instructions" : "offscreen"}>
+                            <FontAwesomeIcon icon={faInfoCircle} />
+                            Must match the first password input field.
+                        </p>
+
+                        <button disabled={!validName || !validPassword || !validMatch ? true : false}>Sign Up</button>
+                    </form>
+                    <p>
+                        Already registered?<br />
+                        <span className="line">
+                            <Link to="/">Sign In</Link>
+                        </span>
+                    </p>
+                </section>
+            )}
+        </>
+    )
+}
+
+export default Register
+
+--
+frontend/src/components/RequireAuth.jsx
+--
+import { useLocation, Navigate, Outlet } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+
+const RequireAuth = ({ allowedRoles }) => {
+  const { auth } = useAuth();
+  const location = useLocation();
+
+  // If auth is still loading, you can show a spinner here
+  if (auth === null) return <p>Loading...</p>; // or spinner component
+
+  // Not authenticated, redirect to login
+  if (!auth?.accessToken) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Authenticated but check role
+  //   if (auth?.roles?.some(role => allowedRoles?.includes(role))) {
+  const rolesArray = Array.isArray(auth?.roles)
+    ? auth.roles
+    : auth?.roles
+    ? [auth.roles]
+    : [];
+  if (rolesArray.some((role) => allowedRoles?.includes(role))) {
+    return <Outlet />;
+  } else {
+    return <Navigate to="/unauthorized" state={{ from: location }} replace />;
+  }
+};
+
+export default RequireAuth;
+
+--
+frontend/src/components/testing/Admin.jsx
+--
+import { Link } from "react-router-dom"
+import Users from "../Users"
+
+const Admin = () => {
+    return (
+        <section>
+            <h1>Admins Page</h1>
+            <br />
+            <Users />
+            <br />
+            <p>You must have been assigned an Admin role.</p>
+            <div className="flexGrow">
+                <Link to="/">Home</Link>
+            </div>
+        </section>
+    )
+}
+
+export default Admin
+
+--
+frontend/src/components/testing/Editor.jsx
+--
+import { Link } from "react-router-dom"
+
+const Editor = () => {
+    return (
+        <section>
+            <h1>Editors Page</h1>
+            <br />
+            <p>You must have been assigned an Editor role.</p>
+            <div className="flexGrow">
+                <Link to="/">Home</Link>
+            </div>
+        </section>
+    )
+}
+
+export default Editor
+
+--
+frontend/src/components/testing/Home.jsx
+--
+import { useNavigate, Link } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "../../context/AuthProvider";
+
+const Home = () => {
+    const { setAuth } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const logout = async () => {
+        // if used in more components, this should be in context 
+        // axios to /logout endpoint 
+        setAuth({});
+        navigate('/linkpage');
+    }
+
+    return (
+        <section>
+            <h1>Home</h1>
+            <br />
+            <p>You are logged in!</p>
+            <br />
+            <Link to="/editor">Go to the Editor page</Link>
+            <br />
+            <Link to="/admin">Go to the Admin page</Link>
+            <br />
+            <Link to="/lounge">Go to the Lounge</Link>
+            <br />
+            <Link to="/linkpage">Go to the link page</Link>
+            <div className="flexGrow">
+                <button onClick={logout}>Sign Out</button>
+            </div>
+        </section>
+    )
+}
+
+export default Home
+
+--
+frontend/src/components/testing/LinkPage.jsx
+--
+import { Link } from "react-router-dom"
+
+const LinkPage = () => {
+    return (
+        <section>
+            <h1>Links</h1>
+            <br />
+            <h2>Public</h2>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
+            <br />
+            <h2>Private</h2>
+            <Link to="/">Home</Link>
+            <Link to="/editor">Editors Page</Link>
+            <Link to="/admin">Admin Page</Link>
+        </section>
+    )
+}
+
+export default LinkPage
+
+--
+frontend/src/components/testing/Lounge.jsx
+--
+import { Link } from "react-router-dom"
+
+const Lounge = () => {
+    return (
+        <section>
+            <h1>The Lounge</h1>
+            <br />
+            <p>Admins and Editors can hang out here.</p>
+            <div className="flexGrow">
+                <Link to="/">Home</Link>
+            </div>
+        </section>
+    )
+}
+
+export default Lounge
+
+--
+frontend/src/components/testing/Missing.jsx
+--
+import { Link } from "react-router-dom"
+
+const Missing = () => {
+    return (
+        <article style={{ padding: "100px" }}>
+            <h1>Oops!</h1>
+            <p>Page Not Found</p>
+            <div className="flexGrow">
+                <Link to="/">Visit Our Homepage</Link>
+            </div>
+        </article>
+    )
+}
+
+export default Missing
+
+--
+frontend/src/components/testing/Unauthorised.jsx
+--
+import { useNavigate } from "react-router-dom"
+
+const Unauthorized = () => {
+    const navigate = useNavigate();
+
+    const goBack = () => navigate(-1);
+
+    return (
+        <section>
+            <h1>Unauthorized</h1>
+            <br />
+            <p>You do not have access to the requested page.</p>
+            <div className="flexGrow">
+                <button onClick={goBack}>Go Back</button>
+            </div>
+        </section>
+    )
+}
+
+export default Unauthorized
+
+--
+frontend/src/components/Users.jsx
+--
+import { useState,useEffect } from "react"
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useNavigate, useLocation } from "react-router-dom";
+
+const USERS_URL = "/auth-service/auth/users"
+
+const Users = () => {
+    const [users, setUsers] = useState([]);
+    const axiosPrivate = useAxiosPrivate();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        let isMounted = true
+        const controller = new AbortController()
+        const getUsers = async () => {
+            try {
+                const response = await axiosPrivate.get(USERS_URL, {
+                    signal: controller.signal,
+                })
+                console.log(response.data)
+                isMounted && setUsers(response.data)
+            } catch (err) {
+                // Ignore aborted requests (component unmounted or navigation)
+                if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
+                    return;
+                }
+                console.error(err)
+                navigate("/login", { state: { from: location }, replace: true });
+            }
+        }
+        getUsers();
+        return () => {
+            isMounted = false
+            controller.abort()
+        }
+    }, []);
+  return (
+    <article>
+        <h2>Users List</h2>
+        {users.length ? (
+            <ul>
+                {users.map((user, i) => (
+                    <li key={i}>{user?.username}</li>
+                ))}
+            </ul>
+        ) : (
+            <p>No users to display</p>
+        )}
+    </article>   
+  )
+}
+
+export default Users;
+
+--
+frontend/src/context/AuthProvider.jsx
+--
+import { createContext, useState } from "react";
+
+const AuthContext = createContext({});
+
+export const AuthProvider = ({ children }) => {
+    const [auth, setAuth] = useState({});
+
+    return (
+        <AuthContext.Provider value={{ auth, setAuth }}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
+
+export default AuthContext;
+
+--
+frontend/src/hooks/useAuth.js
+--
+import { useContext } from "react";
+import AuthContext from "../context/AuthProvider";
+
+const useAuth = () => {
+    return useContext(AuthContext);
+}
+
+export default useAuth;
+
+--
+frontend/src/hooks/useAxiosPrivate.js
+--
+import { axiosPrivate } from "../api/axios";
+import { useEffect, useRef } from "react";
+import useRefreshToken from "./useRefreshToken";
+import useAuth from "./useAuth";
+
+const useAxiosPrivate = () => {
+  const refresh = useRefreshToken();
+  const { auth } = useAuth();
+  const refreshTokenPromiseRef = useRef(null);
+
+  useEffect(() => {
+    const requestIntercept = axiosPrivate.interceptors.request.use(
+      (config) => {
+        if (!config.headers["Authorization"]) {
+          config.headers["Authorization"] = `Bearer ${auth?.accessToken}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+    const responseIntercept = axiosPrivate.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const prevRequest = error?.config;
+        
+        // Ignore aborted requests (CanceledError)
+        if (error.code === 'ERR_CANCELED' || error.name === 'CanceledError') {
+          return Promise.reject(error);
+        }
+
+        if (error?.response?.status === 401 && !prevRequest?._retry) {
+          prevRequest._retry = true;
+
+          // Prevent multiple simultaneous refresh calls
+          if (!refreshTokenPromiseRef.current) {
+            refreshTokenPromiseRef.current = refresh();
+          }
+
+          try {
+            const newAccessToken = await refreshTokenPromiseRef.current;
+            prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+            refreshTokenPromiseRef.current = null; // Reset after successful refresh
+            return axiosPrivate(prevRequest);
+          } catch (refreshError) {
+            refreshTokenPromiseRef.current = null; // Reset on error
+            return Promise.reject(refreshError);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+    return () => {
+      axiosPrivate.interceptors.request.eject(requestIntercept);
+      axiosPrivate.interceptors.response.eject(responseIntercept);
+    };
+  }, [auth, refresh]);
+  return axiosPrivate;
+};
+
+export default useAxiosPrivate;
+
+--
+frontend/src/hooks/useRefreshToken.js
+--
+import axios from "../api/axios";
+import useAuth from "./useAuth";
+
+const useRefreshToken = () => {
+  const { setAuth, auth } = useAuth();
+
+  const refresh = async () => {
+    const response = await axios.post(
+      "/auth-service/auth/refresh",
+      {}, // no body
+      {
+        withCredentials: true,
+      }
+    );
+
+    // Backend returns AuthResponse in the body, not headers
+    const newAccessToken = response?.data?.accessToken;
+
+    if (!newAccessToken) {
+      throw new Error("No access token in refresh response");
+    }
+
+    setAuth(prev => ({
+      ...prev,
+      accessToken: newAccessToken,
+    }));
+
+    return newAccessToken;
+  };
+
+  return refresh;
+};
+
+export default useRefreshToken;
+
+--
+frontend/src/hooks/useWebSockets.js
+--
+import { useEffect, useState } from 'react';
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
+
+export const useWebSockets = (topic) => {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8765/ws'); // Gateway Endpoint
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        stompClient.subscribe(topic, (message) => {
+          const newAlert = JSON.parse(message.body);
+          setMessages((prev) => [newAlert, ...prev].slice(0, 50)); // Keep last 50
+        });
+      },
+    });
+
+    stompClient.activate();
+    return () => stompClient.deactivate();
+  }, [topic]);
+
+  return messages;
+};
+
+--
+frontend/src/index.css
+--
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+--
+frontend/src/layout/Layout.jsx
+--
+import { Outlet } from 'react-router-dom'
+
+const Layout = () => {
+  return (
+   <main className="App">
+    <Outlet />
+   </main>   
+  )
+}
+
+export default Layout
+
+--
+frontend/src/main.jsx
+--
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+import { AuthProvider } from "./context/AuthProvider";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/*" element={<App />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  </StrictMode>
+);

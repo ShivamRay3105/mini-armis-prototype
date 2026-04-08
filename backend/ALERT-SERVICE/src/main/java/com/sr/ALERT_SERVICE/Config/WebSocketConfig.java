@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // This is the URL the React frontend will use to connect
         registry.addEndpoint("/ws-alerts")
-                .setAllowedOrigins("http://localhost:3000") // Allow your React app
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 }

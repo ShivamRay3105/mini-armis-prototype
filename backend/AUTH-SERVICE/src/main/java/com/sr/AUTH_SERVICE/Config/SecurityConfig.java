@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // Registration and Login must be public
+                        .requestMatchers("/ws-alerts/**").permitAll()
                         .anyRequest().authenticated() // All other OT Dashboard routes are locked
                 );
 
