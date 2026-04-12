@@ -30,4 +30,16 @@ public class AlertConsumerServiceImpl implements AlertConsumerService {
         messagingTemplate.convertAndSend("/topic/alerts", event);
     }
 
+    @Override
+    public void resolveAlert(Long alertId) {
+        RiskEvent event = riskEventRepository.findById(alertId)
+                .orElseThrow(() -> new RuntimeException("Alert not found with id: " + alertId));
+
+        event.setResolved(true);
+        riskEventRepository.save(event);
+
+        // Notify frontend about resolution
+        messagingTemplate.convertAndSend("/topic/alerts", event);
+    }
+
 }

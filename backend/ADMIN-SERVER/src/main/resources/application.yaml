@@ -1,0 +1,14 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: ADMIN-SERVER
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    lease-renewal-interval-in-seconds: 10 # Faster updates for the dashboard
+    # THIS IS THE FIX: Tell it to use 'localhost' instead of 'MSI.mshome.net'
+    hostname: localhost
+    prefer-ip-address: true

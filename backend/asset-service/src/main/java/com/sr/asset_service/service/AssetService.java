@@ -22,4 +22,6 @@ public interface AssetService {
 
     void updateRisk(Long assetId, double newRiskScore);
 
+    void deleteAsset(Long id);
+
 }

@@ -1,0 +1,70 @@
+/* =========================================================
+   SentinelStream — Home / No-Role Page Styles
+   ========================================================= */
+
+.home-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--sba-bg-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.home-card {
+  background: #ffffff;
+  border: 1px solid var(--sba-border);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 460px;
+  overflow: hidden;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Yellow warning accent bar — different from login's green */
+.home-card::before {
+  content: '';
+  display: block;
+  height: 4px;
+  background-color: var(--sba-yellow-warn);
+}
+
+.home-card section {
+  padding: 2.5rem 2rem 2rem;
+}
+
+.home-card h1 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sba-text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.75rem;
+}
+
+.home-card p {
+  font-size: 13px;
+  color: var(--sba-text-muted);
+  font-family: var(--font-mono);
+  margin: 0 0 1.75rem;
+}
+
+.home-card button {
+  padding: 0.55rem 1.5rem;
+  background: var(--sba-red-down);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease;
+}
+
+.home-card button:hover  { background: #e04040; }
+.home-card button:active { background: #c73333; }

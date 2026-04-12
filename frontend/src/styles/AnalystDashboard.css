@@ -1,0 +1,406 @@
+/* =========================================================
+   SentinelStream — Analyst Dashboard + AlertFeed Styles
+   Theme: Spring Boot Admin + SOC/Cybersecurity
+   ========================================================= */
+
+/* ── Dashboard Wrapper ──────────────────────────────────── */
+
+.dashboard-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--sba-bg-gray);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+
+.dashboard-header {
+  background-color: var(--sba-dark-sidebar);
+  border-bottom: 3px solid var(--sba-green-up);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-header h1 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  margin: 0;
+}
+
+/* Pulsing green dot */
+.pulse-icon {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--sba-green-up);
+  display: inline-block;
+  flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(65,209,147,0.5); }
+  50%       { opacity: 0.6; box-shadow: 0 0 0 4px rgba(65,209,147,0); }
+}
+
+/* ── Main Layout (grid: asset area + sidebar) ───────────── */
+
+.dashboard-main {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Asset Grid Section ─────────────────────────────────── */
+
+.asset-grid {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--sba-border);
+}
+
+.section-header h2 {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sba-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.section-header .count {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--sba-green-up);
+  font-weight: 600;
+}
+
+/* ── Asset Cards Grid ───────────────────────────────────── */
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.asset-card {
+  background: #ffffff;
+  border: 1px solid var(--sba-border);
+  border-radius: 4px;
+  padding: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.asset-card:hover {
+  border-color: #adb5bd;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.mac-address {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--sba-text-muted);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+/* Status tags — SBA-style pills */
+.status-tag {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.status-tag.danger {
+  background: #ffe0e0;
+  color: #c0392b;
+  border: 1px solid #f5c6c6;
+}
+
+.status-tag.safe {
+  background: #e0f7ef;
+  color: #1a7a52;
+  border: 1px solid #b2e8d3;
+}
+
+.asset-card h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sba-text-main);
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.risk-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.risk-label {
+  font-size: 10px;
+  color: var(--sba-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.risk-indicator {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.risk-indicator.high { color: var(--sba-red-down); }
+.risk-indicator.low  { color: var(--sba-green-up); }
+
+/* Progress bar */
+.progress-bg {
+  width: 100%;
+  height: 4px;
+  background: #e9ecef;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+
+.dashboard-sidebar {
+  background: var(--sba-dark-sidebar);
+  border-left: 1px solid #495057;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #495057;
+  flex-shrink: 0;
+}
+
+.sidebar-header h2 {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--sba-green-up);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-family: var(--font-mono);
+  margin: 0;
+}
+
+/* ── Alert Feed Container ───────────────────────────────── */
+
+.alert-feed-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.alert-feed-container > header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #495057;
+  flex-shrink: 0;
+}
+
+.alert-feed-container > header h3 {
+  font-size: 11px;
+  font-weight: 600;
+  color: #adb5bd;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  margin: 0;
+}
+
+/* ── Alert List (scrollable) ────────────────────────────── */
+
+.alert-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Thin custom scrollbar */
+.alert-list::-webkit-scrollbar       { width: 4px; }
+.alert-list::-webkit-scrollbar-track { background: transparent; }
+.alert-list::-webkit-scrollbar-thumb { background: #495057; border-radius: 2px; }
+
+/* ── Stable State ───────────────────────────────────────── */
+
+.status-stable {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--sba-green-up);
+  text-align: center;
+  padding: 1.5rem 0.5rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── Alert Card ─────────────────────────────────────────── */
+
+.alert-card {
+  background: #2c3136;
+  border: 1px solid #495057;
+  border-left: 3px solid var(--sba-red-down);
+  border-radius: 3px;
+  padding: 0.65rem 0.75rem;
+  animation: slide-in 0.2s ease;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Alert meta row: time + severity */
+.alert-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  border: none;
+  padding: 0;
+}
+
+.alert-meta time {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: #6c757d;
+  letter-spacing: 0.04em;
+}
+
+/* Severity label */
+.severity-label {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  background: rgba(255, 82, 82, 0.18);
+  color: var(--sba-red-down);
+  border: 1px solid rgba(255, 82, 82, 0.3);
+}
+
+/* Alert detail rows */
+.alert-details {
+  margin-bottom: 0.6rem;
+}
+
+.alert-details p {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: #ced4da;
+  margin: 0 0 0.2rem;
+  line-height: 1.4;
+}
+
+.alert-details strong {
+  color: #adb5bd;
+  font-weight: 600;
+}
+
+/* Footer: risk score + resolve button */
+.alert-actions-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  padding: 0;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #495057;
+}
+
+.impact-data {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--sba-yellow-warn);
+  font-weight: 600;
+}
+
+/* Resolve button */
+.button-group button {
+  padding: 0.3rem 0.7rem;
+  background: transparent;
+  color: var(--sba-green-up);
+  border: 1px solid var(--sba-green-up);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.button-group button:hover {
+  background: var(--sba-green-up);
+  color: #1a1e21;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .dashboard-main {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-sidebar {
+    border-left: none;
+    border-top: 1px solid #495057;
+    max-height: 420px;
+  }
+}

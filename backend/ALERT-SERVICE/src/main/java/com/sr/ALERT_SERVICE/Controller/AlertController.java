@@ -17,10 +17,18 @@ public class AlertController {
 
     private final RiskEventRepository repository;
 
+    private final AlertConsumerService alertConsumerService;
+
     @GetMapping("/history")
     public List<RiskEvent> getAlertHistory() {
         // Returns the last 50 alerts from our Docker Postgres
 
         return repository.findTop50ByOrderByTimestampDesc();
     }
+
+    @PostMapping("/{id}/resolve")
+    public void alertResolve(@PathVariable Long id) {
+        alertConsumerService.resolveAlert(id);
+    }
+
 }

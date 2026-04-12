@@ -38,12 +38,6 @@ resilience4j:
           - java.io.IOException           # For "Connection Refused" (Service is down)
           - java.util.concurrent.TimeoutException # For when the service is too slow
           - org.springframework.web.client.RestClientException # Good to keep just in case
-  
-  # timelimiter:
-  #   instances:
-  #     assetService:
-  #       timeoutDuration: 2s
-  #       cancelRunningFuture: true
 
   circuitbreaker:
     instances:
@@ -61,3 +55,13 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

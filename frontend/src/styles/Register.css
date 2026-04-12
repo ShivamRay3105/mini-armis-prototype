@@ -1,0 +1,257 @@
+/* =========================================================
+   SentinelStream — Register Page Styles
+   Theme: Spring Boot Admin + SOC/Cybersecurity
+   ========================================================= */
+
+/* ── Page Shell ─────────────────────────────────────────── */
+
+.register-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--sba-bg-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+/* ── Card ───────────────────────────────────────────────── */
+
+.register-card {
+  background: #ffffff;
+  border: 1px solid var(--sba-border);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.register-card::before {
+  content: '';
+  display: block;
+  height: 4px;
+  background-color: var(--sba-green-up);
+}
+
+/* ── Card Body ──────────────────────────────────────────── */
+
+.register-card section {
+  padding: 2rem 2rem 0;
+  margin: 0;
+}
+
+/* ── Heading ────────────────────────────────────────────── */
+
+.register-card h1 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sba-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 1.5rem;
+}
+
+/* ── Error / Offscreen ──────────────────────────────────── */
+
+.errmsg {
+  background: #fff8e1;
+  border: 1px solid var(--sba-yellow-warn);
+  border-left: 3px solid var(--sba-red-down);
+  color: #856404;
+  font-size: 13px;
+  padding: 0.6rem 0.9rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+}
+
+.offscreen {
+  position: absolute;
+  left: -9999px;
+}
+
+/* ── Form ───────────────────────────────────────────────── */
+
+.register-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Labels ─────────────────────────────────────────────── */
+
+.register-card label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.375rem;
+}
+
+/* ── Valid / Invalid Icons ──────────────────────────────── */
+
+.valid {
+  color: var(--sba-green-up);
+  font-size: 12px;
+}
+
+.invalid {
+  color: var(--sba-red-down);
+  font-size: 12px;
+}
+
+.hide {
+  display: none;
+}
+
+/* ── Inputs ─────────────────────────────────────────────── */
+
+.register-card input[type="text"],
+.register-card input[type="password"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.75rem;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid var(--sba-border);
+  border-radius: 4px;
+  background: var(--sba-bg-gray);
+  color: var(--sba-text-main);
+  margin-bottom: 0.5rem;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.register-card input[type="text"]:focus,
+.register-card input[type="password"]:focus {
+  border-color: var(--sba-green-up);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(65, 209, 147, 0.15);
+}
+
+/* Invalid aria state — red border */
+.register-card input[aria-invalid="true"]:not(:placeholder-shown) {
+  border-color: var(--sba-red-down);
+}
+
+/* ── Instruction Hints ──────────────────────────────────── */
+
+.instructions {
+  background: #f1f3f5;
+  border: 1px solid var(--sba-border);
+  border-left: 3px solid #4e73df;
+  color: var(--sba-text-muted);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.instructions svg {
+  margin-right: 5px;
+  color: #4e73df;
+}
+
+/* ── Submit Button ──────────────────────────────────────── */
+
+.register-card button {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: var(--sba-dark-sidebar);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  font-family: inherit;
+}
+
+.register-card button:hover:not(:disabled) { background: #23272b; }
+.register-card button:active:not(:disabled) { background: #1a1e21; }
+
+.register-card button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Success State ──────────────────────────────────────── */
+
+.register-card .success-section {
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.register-card .success-section h1 {
+  font-size: 14px;
+  color: var(--sba-green-up);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.register-card .success-section p {
+  font-size: 13px;
+  color: var(--sba-text-muted);
+}
+
+.register-card .success-section a {
+  color: var(--sba-green-up);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ── Footer paragraph (Sign In link) ───────────────────── */
+
+.register-card section > p:last-child {
+  border-top: 1px solid #f1f3f5;
+  margin: 1.5rem -2rem 0;
+  padding: 1rem 2rem;
+  font-size: 13px;
+  color: var(--sba-text-muted);
+  text-align: center;
+}
+
+.register-card .line a {
+  color: var(--sba-green-up);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-card .line a:hover { text-decoration: underline; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .register-page {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .register-card {
+    border: none;
+    border-radius: 0;
+    max-width: 100%;
+    min-height: 100vh;
+  }
+
+  .register-card section {
+    padding: 2rem 1.25rem 0;
+  }
+
+  .register-card section > p:last-child {
+    margin: 1.5rem -1.25rem 0;
+    padding: 1rem 1.25rem;
+  }
+}

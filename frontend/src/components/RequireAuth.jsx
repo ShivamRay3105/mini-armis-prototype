@@ -1,34 +1,3 @@
-// import { useLocation, Navigate, Outlet } from "react-router-dom";
-// import useAuth from "../hooks/useAuth";
-
-// const RequireAuth = ({ allowedRoles }) => {
-//     const { auth } = useAuth();
-//     const location = useLocation();
-
-//      if (auth?.accessToken) {
-//         if (auth?.roles?.some(role => allowedRoles?.includes(role))) {
-//             // User is authenticated and has the correct role, allow access to the protected route
-//             return <Outlet />;
-//         } else {
-//             // User is authenticated but does not have the correct role, redirect to unauthorized page
-//             return <Navigate to="/unauthorized" state={{ from: location }} replace />;
-//         }
-//     } else {
-//         // User is not authenticated, redirect to login page and remember the current location
-//         return <Navigate to="/login" state={{ from: location }} replace />;
-//     }
-
-//     // return (
-//     //     auth?.roles?.find(role => allowedRoles?.includes(role))
-//     //         ? <Outlet />
-//     //         : auth?.user
-//     //             ? <Navigate to="/unauthorized" state={{ from: location }} replace />
-//     //             : <Navigate to="/login" state={{ from: location }} replace />
-//     // );
-// }
-
-// export default RequireAuth;
-
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 

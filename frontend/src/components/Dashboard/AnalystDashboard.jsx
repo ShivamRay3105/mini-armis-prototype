@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import AlertFeed from '../Alerts/AlertFeed';
+import '../../styles/AnalystDashboard.css';
 
 const AnalystDashboard = () => {
     const [assets, setAssets] = useState([]);
@@ -29,9 +30,8 @@ const AnalystDashboard = () => {
             <header className="dashboard-header">
                 <div className="header-status">
                     <span className="pulse-icon"></span>
-                    <h1>SYSTEM_ANALYST_CONSOLE // LIVE_TELEMETRY</h1>
+                    <h1>SYSTEM ANALYST CONSOLE</h1>
                 </div>
-                <div className="system-time">{new Date().toLocaleTimeString()}</div>
             </header>
 
             <main className="dashboard-main">

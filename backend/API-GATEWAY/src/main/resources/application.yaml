@@ -63,9 +63,26 @@ spring:
               - Path=/ws-alerts/**
               filters:
               - StripPrefix=0 # Keep the path as is, but ensures cleaner handoff
+
+            # 6. ADMIN SERVER
+            - id: admin-server
+              uri: lb://ADMIN-SERVER
+              predicates:
+                - Path=/admin/**
+
 eureka:
   instance:
     prefer-ip-address: true  # <--- THIS IS THE CRITICAL LINE
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

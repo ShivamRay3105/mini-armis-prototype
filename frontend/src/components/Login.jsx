@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import '../styles/Login.css'
 
 import axios from "../api/axios";
 const LOGIN_URL = "/auth-service/auth/login";
@@ -76,6 +77,8 @@ const Login = () => {
   };
 
   return (
+    <div className="login-page">
+    <div className="login-card">
     <section>
       <p
         ref={errRef}
@@ -115,6 +118,8 @@ const Login = () => {
         </span>
       </p>
     </section>
+     </div>
+  </div>
   );
 };
 

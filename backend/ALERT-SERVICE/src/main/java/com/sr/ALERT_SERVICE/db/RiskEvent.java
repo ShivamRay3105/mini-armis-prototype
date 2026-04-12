@@ -23,6 +23,8 @@ public class RiskEvent {
     String riskLevel;
     String reason;
     Instant timestamp;
+    @Builder.Default
+    private boolean isResolved = false;;
 
     @PrePersist
     protected void onCreate() {

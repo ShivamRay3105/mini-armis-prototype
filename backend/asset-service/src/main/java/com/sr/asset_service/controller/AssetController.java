@@ -99,4 +99,10 @@ public class AssetController {
                 return ResponseEntity.ok().build();
         }
 
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
+                assetService.deleteAsset(id);
+                return ResponseEntity.noContent().build();
+        }
+
 }

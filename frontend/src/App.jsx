@@ -5,7 +5,6 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import LinkPage from "./components/testing/LinkPage";
 import Unauthorized from "./components/testing/Unauthorised";
-import Editor from "./components/testing/Editor";
 import RequireAuth from "./components/RequireAuth";
 import Admin from "./components/testing/Admin";
 import Lounge from "./components/testing/Lounge";
@@ -17,8 +16,7 @@ import AnalystDashboard from "./components/Dashboard/AnalystDashboard";
 // Your backend log showed: "roles":["ROLE_USER"]
 const ROLES = {
     'User': 'ROLE_USER',
-    'Editor': 'ROLE_EDITOR',
-    'Admin': 'ROLE_ADMIN',
+    'Admin': 'ROLE_SYSTEM_ADMIN',
     'Analyst': 'ROLE_SECURITY_ANALYST'
     
 };
@@ -35,18 +33,15 @@ function App() {
 
         {/* Protected Routes */}
         {/* Home is accessible by anyone with a valid role */}
-        <Route element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Editor, ROLES.Admin]} />}>
+        <Route element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Admin, ROLES.Analyst]} />}>
           <Route path="/" element={<Home />} />
-        </Route>
-
-        <Route element={<RequireAuth allowedRoles={[ROLES.Editor]} />}>
-          <Route path="editor" element={<Editor />} />
         </Route>
 
         <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
           <Route path="admin" element={<Admin />} />
         </Route>
 
+        {/* SECURITY ANALYST ROUTES */}
         <Route element={<RequireAuth allowedRoles={[ROLES.Analyst]} />}>
           <Route path="lounge" element={<Lounge />} />
           <Route path="security_analyst" element={<AnalystDashboard />} />

@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "AdminServerApplication",
+            "request": "launch",
+            "mainClass": "com.sr.ADMIN_SERVER.AdminServerApplication",
+            "projectName": "ADMIN-SERVER"
+        },
+        {
+            "type": "java",
             "name": "ApiGatewayApplication",
             "request": "launch",
             "mainClass": "com.sr.API_GATEWAY.ApiGatewayApplication",
