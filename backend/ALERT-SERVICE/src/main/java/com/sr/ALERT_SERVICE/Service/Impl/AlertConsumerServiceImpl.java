@@ -6,11 +6,21 @@ import org.springframework.stereotype.Service;
 
 import com.sr.ALERT_SERVICE.Repository.RiskEventRepository;
 import com.sr.ALERT_SERVICE.Service.AlertConsumerService;
+import com.sr.ALERT_SERVICE.db.AlertSeverity;
 import com.sr.ALERT_SERVICE.db.RiskEvent;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * CIS Control 8 — Audit Log Management:
+ *   Every consumed event is persisted with severity + groupKey so the
+ *   alert store is queryable by priority and incident group.
+ *
+ * CIS Control 17 — Incident Response:
+ *   severity drives SOC triage queues.
+ *   groupKey enables incident lifecycle correlation.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -24,9 +34,22 @@ public class AlertConsumerServiceImpl implements AlertConsumerService {
     public void handleRiskEvent(RiskEvent event) {
         log.info("🚨 New Threat Detected: Asset {} | Level: {}", event.getAssetId(), event.getRiskLevel());
 
+        // CIS-17: derive severity from risk score
+        AlertSeverity severity = AlertSeverity.fromScore(
+                event.getRiskScore() != null ? event.getRiskScore() : 0.0);
+        event.setSeverity(severity);
+
+        // CIS-8: build groupKey for incident correlation
+        // Format: "<assetId>:<riskLevel>" so all CRITICAL events on the same asset share a key
+        String groupKey = event.getAssetId() != null && event.getRiskLevel() != null
+                ? event.getAssetId().toString() + ":" + event.getRiskLevel()
+                : null;
+        event.setGroupKey(groupKey);
+
+        log.info("[CIS-8] Saving alert: severity={} groupKey={}", severity, groupKey);
         riskEventRepository.save(event);
 
-        // 2. Push to Frontend via WebSocket Topic
+        // Push to frontend via WebSocket
         messagingTemplate.convertAndSend("/topic/alerts", event);
     }
 
@@ -37,9 +60,9 @@ public class AlertConsumerServiceImpl implements AlertConsumerService {
 
         event.setResolved(true);
         riskEventRepository.save(event);
+        log.info("[CIS-17] Alert {} resolved. GroupKey: {}", alertId, event.getGroupKey());
 
         // Notify frontend about resolution
         messagingTemplate.convertAndSend("/topic/alerts", event);
     }
-
 }

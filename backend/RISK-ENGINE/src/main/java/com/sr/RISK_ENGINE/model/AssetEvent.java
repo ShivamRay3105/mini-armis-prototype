@@ -7,13 +7,16 @@ import com.sr.RISK_ENGINE.Enums.EventType;
 
 public record AssetEvent(
 
-        UUID eventId,
-        String version,
-        Long assetId,
-        EventType eventType,
-        Instant timestamp,
-        Instant ingestedAt,
-        String protocol,
-        String ipAddress) {
+                UUID eventId,
+                String version,
+                UUID assetId,
+                EventType eventType,
+                Instant timestamp,
+                Instant ingestedAt,
+                String protocol,
+                String ipAddress,
+                Integer port,        // CIS-13: port tracking for anomaly detection
+                String macAddress    // CIS-1: stable device identity for discovery
+) {
 
 }

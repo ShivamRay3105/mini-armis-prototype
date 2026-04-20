@@ -1,6 +1,7 @@
 package com.sr.asset_service.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.sr.asset_service.dto.AssetRequest;
 import com.sr.asset_service.dto.StatusRequest;
@@ -12,16 +13,18 @@ public interface AssetService {
 
     List<Asset> getAllAssets();
 
-    Asset getAsset(Long id);
+    Asset getAsset(UUID id);
 
-    Asset updateAssetStatus(Long id, StatusRequest request);
+    Asset updateAssetStatus(UUID id, StatusRequest request);
 
     // List<Asset> getAssetsByStatus(Status status);
 
-    Asset updateAssetLastSeen(Long id);
+    Asset updateAssetLastSeen(UUID id);
 
-    void updateRisk(Long assetId, double newRiskScore);
+    void updateRisk(UUID assetId, double newRiskScore);
 
-    void deleteAsset(Long id);
+    void deleteAsset(UUID id);
+
+    Asset upsertFromEvent(String mac, String ip, Integer port, String protocol, String deviceType);
 
 }

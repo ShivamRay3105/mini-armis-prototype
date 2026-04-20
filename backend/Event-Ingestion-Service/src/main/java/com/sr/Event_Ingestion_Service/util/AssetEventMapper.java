@@ -18,6 +18,8 @@ public interface AssetEventMapper {
     @Mapping(source = "eventRequest.assetId", target = "assetId")
     @Mapping(source = "eventRequest.eventType", target = "eventType")
     @Mapping(source = "eventRequest.timestamp", target = "timestamp")
+    @Mapping(source = "eventRequest.port", target = "port")           // CIS-13
+    @Mapping(source = "eventRequest.macAddress", target = "macAddress") // CIS-1
     @Mapping(source = "assetDTO.protocol", target = "protocol")
     @Mapping(source = "assetDTO.ipAddress", target = "ipAddress")
     @Mapping(source = "assetDTO.deviceType", target = "deviceType")

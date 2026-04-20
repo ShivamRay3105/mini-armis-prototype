@@ -2,6 +2,7 @@ package com.sr.asset_service.controller;
 
 import com.sr.asset_service.dto.AssetRequest;
 import com.sr.asset_service.dto.AssetResponse;
+import com.sr.asset_service.dto.AssetUpsertRequest;
 import com.sr.asset_service.dto.StatusRequest;
 import com.sr.asset_service.dto.UpdateRiskRequest;
 import com.sr.asset_service.mapper.AssetMapper;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +60,7 @@ public class AssetController {
 
         // GET ASSET BY ID
         @GetMapping("/{id}")
-        public ResponseEntity<AssetResponse> getAssetById(@PathVariable Long id) {
+        public ResponseEntity<AssetResponse> getAssetById(@PathVariable UUID id) {
 
                 Asset asset = assetService.getAsset(id);
                 return ResponseEntity.ok(
@@ -68,7 +70,7 @@ public class AssetController {
         // UPDATE STATUS
         @PatchMapping("/{id}/status")
         public ResponseEntity<AssetResponse> updateAssetStatus(
-                        @PathVariable Long id,
+                        @PathVariable UUID id,
                         @Valid @RequestBody StatusRequest request) {
 
                 Asset asset = assetService.updateAssetStatus(id, request);
@@ -79,7 +81,7 @@ public class AssetController {
         // UPDATE LAST SEEN (machine-to-machine)
         @PatchMapping("/{id}/last-seen")
         public ResponseEntity<AssetResponse> updateLastSeen(
-                        @PathVariable Long id) {
+                        @PathVariable UUID id) {
 
                 Asset asset = assetService.updateAssetLastSeen(id);
                 return ResponseEntity.ok(
@@ -100,9 +102,15 @@ public class AssetController {
         }
 
         @DeleteMapping("/{id}")
-        public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
+        public ResponseEntity<Void> deleteAsset(@PathVariable UUID id) {
                 assetService.deleteAsset(id);
                 return ResponseEntity.noContent().build();
         }
 
+        @PostMapping("/internal/upsert")
+        public ResponseEntity<Void> upsertAsset(@RequestBody AssetUpsertRequest request) {
+                assetService.upsertFromEvent(request.macAddress(), request.ipAddress(), request.port(),
+                                request.protocol(), request.deviceType());
+                return ResponseEntity.ok().build();
+        }
 }

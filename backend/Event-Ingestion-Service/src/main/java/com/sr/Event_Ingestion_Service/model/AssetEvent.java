@@ -13,7 +13,9 @@ public record AssetEvent(
         Instant ingestedAt,
         String protocol,
         String ipAddress,
-        String deviceType
+        String deviceType,
+        Integer port,       // CIS-13: port for risk engine anomaly detection
+        String macAddress   // CIS-1: stable identity for asset discovery enrichment
 
 ) {
 

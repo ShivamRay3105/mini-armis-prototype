@@ -16,6 +16,8 @@ import com.sr.RISK_ENGINE.Rules.RiskRule;
 import com.sr.RISK_ENGINE.Rules.Base.BaseScoreRule;
 import com.sr.RISK_ENGINE.Rules.Frequency.AuthFailureFrequencyRule;
 import com.sr.RISK_ENGINE.Rules.Frequency.PortScanFrequencyRule;
+import com.sr.RISK_ENGINE.Rules.Network.NewPortUsageRule;
+import com.sr.RISK_ENGINE.Rules.Network.UnusualProtocolRule;
 import com.sr.RISK_ENGINE.Rules.Sequence.AuthSequenceRule;
 import com.sr.RISK_ENGINE.Rules.Sequence.PrivilegeEscalationRule;
 import com.sr.RISK_ENGINE.Service.IdempotencyService;
@@ -48,13 +50,16 @@ public class RiskServiceImpl implements RiskService {
 
     private final RiskReasonBuilder riskReasonBuilder;
 
-    // Rule list
+    // Rule list — order matters: base first, then frequency, then sequence, then network
     private final List<RiskRule> rules = List.of(
             new BaseScoreRule(),
             new AuthFailureFrequencyRule(),
             new AuthSequenceRule(),
             new PrivilegeEscalationRule(),
-            new PortScanFrequencyRule());
+            new PortScanFrequencyRule(),
+            new NewPortUsageRule(),        // CIS-13: new port anomaly detection
+            new UnusualProtocolRule()      // CIS-13: OT protocol abuse detection
+    );
 
     @Override
     public void processEvent(AssetEvent event) {
