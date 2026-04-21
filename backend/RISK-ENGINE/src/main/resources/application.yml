@@ -38,6 +38,8 @@ resilience4j:
           - java.io.IOException           # For "Connection Refused" (Service is down)
           - java.util.concurrent.TimeoutException # For when the service is too slow
           - org.springframework.web.client.RestClientException # Good to keep just in case
+        ignore-exceptions:
+          - feign.FeignException$NotFound
 
   circuitbreaker:
     instances:
@@ -48,6 +50,8 @@ resilience4j:
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
         permitted-number-of-calls-in-half-open-state: 3
+        ignore-exceptions:
+          - feign.FeignException$NotFound
 
 eureka:
   instance:

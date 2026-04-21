@@ -30,19 +30,31 @@ public class NewPortUsageRule implements RiskRule {
         int size = recentList.size();
         List<AssetEvent> window = recentList.subList(Math.max(0, size - 50), size);
 
-        int newPortCount = 0;
+        int freshlyAdded = 0;
         for (AssetEvent event : window) {
             if (event.port() != null) {
                 boolean isNew = context.addPortAndCheckIfNew(event.port());
                 if (isNew) {
-                    newPortCount++;
+                    freshlyAdded++;
                 }
             }
         }
 
-        if (newPortCount >= 2) return 25.0;
-        if (newPortCount == 1) return 15.0;
+        int totalKnown = context.getKnownPorts().size();
 
-        return 0.0;
+        // If we just discovered the very first port, it's just establishing a baseline.
+        if (totalKnown <= 1) {
+            return 0.0;
+        }
+
+        // For every port beyond the first one, we assign 15 points of baseline risk.
+        double score = (totalKnown - 1) * 15.0;
+
+        // If multiple ports were added in THIS window, we add a surge penalty.
+        if (freshlyAdded >= 2) {
+            score += 10.0;
+        }
+
+        return Math.min(score, 100.0);
     }
 }

@@ -27,21 +27,20 @@ public class AssetEventProducer {
 
     @PostMapping("/sendEvent")
     public void sendEvent(@RequestBody AssetEvent event) {
+
         log.info("Pushing Asset Event to Kafka for Asset: {} | EventId: {}", event.assetId(), event.eventId());
 
-        kafkaTemplate.send(TOPIC, event.assetId().toString(), event)
-                .whenComplete((result, ex) -> {
-                    if (ex != null) {
-                        // CIS-8: log delivery failure for audit trail
-                        log.error("[CIS-8] Kafka send FAILED for eventId={} assetId={}: {}",
-                                event.eventId(), event.assetId(), ex.getMessage());
-                    } else {
-                        log.info("[CIS-8] Kafka send SUCCESS: eventId={} → topic={} partition={} offset={}",
-                                event.eventId(),
-                                result.getRecordMetadata().topic(),
-                                result.getRecordMetadata().partition(),
-                                result.getRecordMetadata().offset());
-                    }
-                });
+        try {
+            var result = kafkaTemplate.send(TOPIC, event.assetId().toString(), event).get(2, java.util.concurrent.TimeUnit.SECONDS);
+            log.info("[CIS-8] Kafka send SUCCESS: eventId={} → topic={} partition={} offset={}",
+                    event.eventId(),
+                    result.getRecordMetadata().topic(),
+                    result.getRecordMetadata().partition(),
+                    result.getRecordMetadata().offset());
+        } catch (Exception ex) {
+            log.error("[CIS-8] Kafka send FAILED for eventId={} assetId={}: {}",
+                    event.eventId(), event.assetId(), ex.getMessage());
+            throw new org.springframework.kafka.KafkaException("Kafka delivery failed", ex);
+        }
     }
 }

@@ -108,9 +108,9 @@ public class AssetController {
         }
 
         @PostMapping("/internal/upsert")
-        public ResponseEntity<Void> upsertAsset(@RequestBody AssetUpsertRequest request) {
-                assetService.upsertFromEvent(request.macAddress(), request.ipAddress(), request.port(),
+        public ResponseEntity<AssetResponse> upsertAsset(@RequestBody AssetUpsertRequest request) {
+                Asset asset = assetService.upsertFromEvent(request.macAddress(), request.ipAddress(), request.port(),
                                 request.protocol(), request.deviceType());
-                return ResponseEntity.ok().build();
+                return ResponseEntity.ok(assetMapper.mapAssetEntityToAssetResponse(asset));
         }
 }

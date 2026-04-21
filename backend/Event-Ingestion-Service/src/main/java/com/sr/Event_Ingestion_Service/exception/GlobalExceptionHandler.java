@@ -48,5 +48,10 @@ public class GlobalExceptionHandler {
         EventResponse response = new EventResponse(null, message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+    @ExceptionHandler({org.springframework.kafka.KafkaException.class, java.util.concurrent.TimeoutException.class})
+    public ResponseEntity<EventResponse> handleKafkaException(Exception ex) {
+        EventResponse response = new EventResponse(null, "REJECTED: Internal Message Broker Down");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+    }
 }
 

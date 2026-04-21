@@ -24,7 +24,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update # This creates the tables automatically based on your @Entity classes
+      ddl-auto: update  # Set to create temporarily to drop and recreate the schema with UUID assetId
     show-sql: true
     properties:
       hibernate:

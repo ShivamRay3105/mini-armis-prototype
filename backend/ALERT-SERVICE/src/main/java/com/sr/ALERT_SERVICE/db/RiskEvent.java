@@ -6,14 +6,17 @@ import lombok.*;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.sr.ALERT_SERVICE.Enums.AlertSeverity;
+
 /**
  * CIS Control 8 — Audit Log Management:
- *   Added: severity (enum), groupKey (incident grouping key)
- *   These turn the alert table from a raw log into a queryable incident store.
+ * Added: severity (enum), groupKey (incident grouping key)
+ * These turn the alert table from a raw log into a queryable incident store.
  *
  * CIS Control 17 — Incident Response:
- *   severity enables priority-based response queues.
- *   groupKey enables incident correlation (same asset + same level = one incident).
+ * severity enables priority-based response queues.
+ * groupKey enables incident correlation (same asset + same level = one
+ * incident).
  */
 @Data
 @Entity
@@ -30,7 +33,8 @@ public class RiskEvent {
     UUID eventId;
 
     // NOTE: assetId is stored as UUID string for forward-compatibility.
-    // The RISK-ENGINE uses UUID for assetId; older data may have Long — migrate later.
+    // The RISK-ENGINE uses UUID for assetId; older data may have Long — migrate
+    // later.
     @Column(name = "asset_id")
     UUID assetId;
 
@@ -50,8 +54,9 @@ public class RiskEvent {
     @Column(name = "group_key")
     private String groupKey;
 
+    @Column(name = "is_resolved", columnDefinition = "boolean default false")
     @Builder.Default
-    private boolean isResolved = false;
+    private Boolean isResolved = false;
 
     @PrePersist
     protected void onCreate() {

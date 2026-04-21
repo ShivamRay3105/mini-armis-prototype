@@ -2,9 +2,9 @@ package com.sr.ALERT_SERVICE.Controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.sr.ALERT_SERVICE.Enums.AlertSeverity;
 import com.sr.ALERT_SERVICE.Repository.RiskEventRepository;
 import com.sr.ALERT_SERVICE.Service.AlertConsumerService;
-import com.sr.ALERT_SERVICE.db.AlertSeverity;
 import com.sr.ALERT_SERVICE.db.RiskEvent;
 
 import lombok.RequiredArgsConstructor;

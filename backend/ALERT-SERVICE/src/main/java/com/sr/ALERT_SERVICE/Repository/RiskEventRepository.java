@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.sr.ALERT_SERVICE.db.AlertSeverity;
+import com.sr.ALERT_SERVICE.Enums.AlertSeverity;
 import com.sr.ALERT_SERVICE.db.RiskEvent;
 
 /**

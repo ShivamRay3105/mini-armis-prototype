@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.sr.Event_Ingestion_Service.dto.EventRequest;
 import com.sr.Event_Ingestion_Service.dto.EventResponse;
@@ -21,7 +22,7 @@ public class EventIngestionController {
     private final EventIngestionService eventIngestionService;
 
     @PostMapping("/stimulate")
-    public ResponseEntity<EventResponse> stimulateEvent(@RequestBody EventRequest eventRequest) {
+    public ResponseEntity<EventResponse> stimulateEvent(@Valid @RequestBody EventRequest eventRequest) {
 
         AssetEvent event = eventIngestionService.ingestEvent(eventRequest);
 

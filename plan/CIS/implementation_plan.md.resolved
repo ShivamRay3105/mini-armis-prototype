@@ -1,0 +1,545 @@
+# CIS Compliance Implementation Plan — SentinelStream (Branch: CIS)
+
+## What This Does
+Aligns the existing SentinelStream microservices with four selected CIS Controls by adding real intelligence to the system — asset auto-discovery, enriched risk scoring, deeper audit/alert persistence, and anomaly detection. No API-Gateway, Auth-Service, or Service-Registry changes are touched.
+
+---
+
+## Services In Scope
+
+| Service | Focus |
+|---|---|
+| `asset-service` | CIS Control 1 — Asset Inventory |
+| `Event-Ingestion-Service` | CIS Control 3 — Event Pipeline hardening |
+| `RISK-ENGINE` | CIS Control 7 & 13 — Risk + Anomaly |
+| `ALERT-SERVICE` | CIS Control 8 & 17 — Audit log depth |
+
+> [!IMPORTANT]
+> We are **NOT** changing API-Gateway, Auth-Service, or Service-Registry.
+
+---
+Good move. You’re shifting from “reading random things” → **structured execution**. That’s how this project becomes real.
+
+But I’m going to correct one thing first:
+
+> ❌ “I need to complete CIS as part of Armis”
+> ✅ “I will map my system features to selected CIS controls”
+
+You’re **not implementing CIS**.
+You’re **building features that align with CIS**.
+
+---
+
+# 🧠 Ground Truth — Your System vs CIS
+
+We’ll map **what you already built** vs **what actually matters**.
+
+---
+
+# 🧩 SentinelStream vs CIS Controls (Focused Version)
+
+We’ll only track **relevant controls (5–6 max)** — not all 18.
+
+---
+
+## ✅ CONTROL 1 — Inventory & Control of Assets
+
+### Meaning:
+
+Know every device on network
+
+### Your Status:
+
+* ❌ Automatic discovery → NOT DONE
+* ⚠️ Manual asset creation → DONE (but wrong approach)
+* ❌ MAC-based identity → NOT DONE
+* ❌ Behavioral profiling → NOT DONE
+
+### Verdict:
+
+> 🔴 **CORE GAP (Highest Priority)**
+
+---
+
+## ✅ CONTROL 7 — Vulnerability Management
+
+### Meaning:
+
+Track vulnerabilities + assign risk
+
+### Your Status:
+
+* ✅ Risk score field exists
+* ⚠️ Risk logic basic
+* ❌ No CVE / vulnerability mapping
+* ❌ No dynamic risk updates from behavior
+
+### Verdict:
+
+> 🟡 **PARTIALLY DONE**
+
+---
+
+## ✅ CONTROL 8 — Audit Log Management
+
+### Meaning:
+
+Collect and analyze logs
+
+### Your Status:
+
+* ✅ Kafka ingestion
+* ✅ Event pipeline
+* ❌ Log persistence strategy unclear
+* ❌ No replay / audit querying
+
+### Verdict:
+
+> 🟡 **GOOD FOUNDATION, NEED DEPTH**
+
+---
+
+## ✅ CONTROL 13 — Network Monitoring & Defense
+
+### Meaning:
+
+Monitor traffic + detect anomalies
+
+### Your Status:
+
+* ✅ Risk engine exists
+* ⚠️ Basic detection rules
+* ❌ No behavior baseline
+* ❌ No anomaly deviation logic
+
+### Verdict:
+
+> 🟡 **PARTIAL**
+
+---
+
+## ✅ CONTROL 17 — Incident Response
+
+### Meaning:
+
+React to threats
+
+### Your Status:
+
+* ✅ Alert Service
+* ✅ WebSocket live feed
+* ❌ No automated response (block/quarantine)
+* ❌ No incident lifecycle
+
+### Verdict:
+
+> 🟡 **GOOD BUT SURFACE LEVEL**
+
+---
+
+# 🚫 IGNORE THESE (FOR NOW)
+
+Do NOT waste time on:
+
+* Data Protection
+* Account Management
+* Email Security
+* Training
+* Pen Testing
+
+👉 These are **enterprise policies**, not your system’s job.
+
+---
+
+# 🧠 Now — Your TRACKABLE TODO SYSTEM
+
+You said you want a directory-style plan. Good.
+
+---
+
+# 📁 Suggested Project Tracking Structure
+
+```plaintext
+sentinelstream-roadmap/
+│
+├── 01_asset_discovery/
+├── 02_risk_engine_enhancement/
+├── 03_event_pipeline/
+├── 04_alerting_system/
+├── 05_observability/
+├── 06_testing/
+├── 07_documentation/
+├── 08_future_ai/
+```
+
+---
+
+# 🥇 01 — ASSET DISCOVERY (START HERE)
+
+## Goal:
+
+Convert static asset system → intelligent discovery system
+
+### Tasks:
+
+```plaintext
+[ ] Add MAC address to Asset model
+[ ] Add firstSeen field
+[ ] Add communicationCount
+[ ] Add portsUsed tracking
+
+[ ] Build Kafka consumer enrichment layer
+[ ] Auto-create asset from events
+[ ] Update lastSeen automatically
+
+[ ] Implement basic classification rules:
+    - port 502 → PLC
+    - port 1883 → IoT (MQTT)
+
+[ ] Store evolving asset profile
+```
+
+---
+
+# 🥈 02 — RISK ENGINE ENHANCEMENT
+
+## Goal:
+
+Make risk meaningful (not random score)
+
+### Tasks:
+
+```plaintext
+[ ] Add rule-based scoring system
+[ ] Add anomaly detection (baseline vs current)
+
+[ ] Implement:
+    - same asset high frequency → suspicious
+    - new port usage → risk++
+    - unusual communication → risk++
+
+[ ] Map detections to MITRE tactics (basic tags)
+```
+
+---
+
+# 🥉 03 — EVENT PIPELINE (STRENGTHEN)
+
+```plaintext
+[ ] Ensure Kafka key = assetId
+[ ] Handle duplicate events
+[ ] Add retry / failure handling
+[ ] Add dead-letter topic (optional)
+```
+
+---
+
+# 🟡 04 — ALERTING SYSTEM
+
+```plaintext
+[ ] Add alert severity levels
+[ ] Add alert history storage
+[ ] Add basic incident grouping
+```
+
+---
+
+# 🟡 05 — OBSERVABILITY (Micrometer)
+
+```plaintext
+[ ] events_processed_total
+[ ] risk_calculation_time
+[ ] active_assets
+```
+
+---
+
+# 🟡 06 — TESTING
+
+```plaintext
+[ ] Build event simulator API
+[ ] Test:
+    - burst traffic
+    - duplicate events
+    - service restart
+```
+
+---
+
+# 🟡 07 — DOCUMENTATION (VERY IMPORTANT)
+
+```plaintext
+[ ] Architecture diagram
+[ ] Data flow explanation
+[ ] Design decisions
+[ ] Tradeoffs (WHY you did things)
+```
+
+---
+
+# 🔵 08 — AI (LATER)
+
+```plaintext
+[ ] MCP server
+[ ] AI analyst queries
+```
+
+---
+
+# 🧨 What You Should Do TODAY
+
+Not 10 things.
+
+Just this:
+
+```plaintext
+1. Create roadmap directory
+2. Start 01_asset_discovery
+3. Modify Asset model
+```
+
+---
+
+# 🧠 Final Strategic Insight
+
+Right now:
+
+> You are transitioning from
+> “CRUD backend developer”
+> → “System thinker (OT security)”
+
+That shift happens ONLY if:
+
+* you stop chasing frameworks
+* and start building **core intelligence**
+
+---
+
+# 🚀 Next Step
+
+Say:
+
+👉 **“Give me exact Asset model + DB schema + Redis structure”**
+
+We’ll lock your foundation before writing any more logic.
+
+
+🆕 asset-discovery-engine — New files to create
+asset-discovery-engine/
+└── src/main/java/com/sr/discovery/
+    ├── consumer/
+    │   └── NetworkEventConsumer.java   ← Kafka listener
+    ├── service/
+    │   └── AssetDiscoveryService.java  ← classification + enrichment logic
+    ├── client/
+    │   └── AssetServiceClient.java     ← Feign client → calls asset-service REST
+    └── dto/
+        ├── NetworkEvent.java           ← Kafka message shape
+        └── DiscoveredAssetRequest.java ← what it sends to asset-service
+## Detailed Task Breakdown
+
+---
+
+## 01 — ASSET DISCOVERY (CIS Control 1) — `asset-service`
+
+### Current state
+- Asset model already has `macAddress`, `firstSeen`, `lastSeen`, `communicationCount`, `portsUsed`, `protocolsSeen` — ✅ already added.
+- `/internal/upsert` endpoint already exists in `AssetController` — ✅
+- `upsertFromEvent()` is already called — need to verify `AssetService` impl.
+
+### Tasks
+
+#### [MODIFY] `AssetServiceImpl.java`
+- Verify `upsertFromEvent(macAddress, ipAddress, port, protocol)` exists and correctly:
+  - Checks if asset with that MAC already exists
+  - If yes → increment `communicationCount`, update `lastSeen`, add `port` to `portsUsed`
+  - If no → auto-create asset with classification rule (port 502 → `PLC`, port 1883 → `IOT`)
+  - Persist the updated/new asset
+
+#### [MODIFY] `AssetRequest.java` / `AssetUpsertRequest.java`
+- Ensure `AssetUpsertRequest` DTO exists with fields: `macAddress`, `ipAddress`, `port`, `protocol`
+
+#### [NEW] `asset-discovery-engine/` (new microservice — plan describes this)
+> **Decision**: Per the plan, asset discovery engine is a **new standalone service** that listens to the `asset-events` Kafka topic and calls `asset-service /internal/upsert`.
+> However, since the plan says "don't look in unnecessary files", we will implement this as a **Kafka consumer inside `asset-service` itself** (simpler, no new service needed for now).
+
+#### [NEW] `NetworkEventConsumer.java` inside `asset-service`
+- Add Kafka consumer that listens to `asset-events` topic
+- On each event: extract `ipAddress`, port from the event, classify device type
+- Call `assetService.upsertFromEvent(...)` 
+
+#### [MODIFY] `asset-service/pom.xml`
+- Add `spring-kafka` dependency if not already present
+
+#### [MODIFY] `asset-service/application.yaml` (or `.properties`)
+- Add Kafka consumer config (bootstrap-servers, group-id, deserializer)
+
+---
+
+## 02 — RISK ENGINE ENHANCEMENT (CIS Control 7 & 13) — `RISK-ENGINE`
+
+### Current state
+- `RiskRule` interface + `HighFrequencyRule`, `SequenceRule` already exist (good foundation)
+- `AssetContext` tracks `recentEvents`, `riskScore`, `requiresManualReset`
+- `AssetEvent` record has `eventType`, `protocol`, `ipAddress` but **NO `port` field**
+- `EventType` has: `AUTH_SUCCESS`, `AUTH_FAILURE`, `UNAUTHORIZED_ACCESS`, `PRIVILEGE_ESCALATION`, `PORT_SCAN`, `SUSPICIOUS_TRAFFIC`, `ANOMALOUS_BEHAVIOR`
+
+### Tasks
+
+#### [MODIFY] `AssetEvent.java` (in RISK-ENGINE)
+- Add `int port` field to the record (to enable new-port detection rule)
+
+#### [MODIFY] `AssetContext.java`
+- Add `Set<Integer> knownPorts` field (tracks ports seen historically)
+- Add `void addPort(int port)` helper
+
+#### [NEW] `NewPortUsageRule.java`
+- Rule: if `event.port()` is not in `assetContext.knownPorts` → `risk += 15`
+- Implements `RiskRule` interface
+
+#### [NEW] `UnusualProtocolRule.java`
+- Rule: if protocol is `MODBUS` or `DNP3` and event is `SUSPICIOUS_TRAFFIC` → `risk += 20` (OT-specific)
+- Implements `RiskRule`
+
+#### [MODIFY] `AssetListener.java` (Kafka consumer in RISK-ENGINE)
+- Ensure Kafka key is `assetId` (it already sends with `assetId` as key from EIS)
+- Add duplicate event handling: if same `eventId` seen twice, skip (use a small LRU set in `AssetContext`)
+
+#### [MODIFY] `RiskServiceImpl.java`
+- Register new rules (`NewPortUsageRule`, `UnusualProtocolRule`) in the injected `List<RiskRule> rules`
+
+#### [MODIFY] `EventType.java`
+- Add `NEW_PORT_DETECTED` and `UNUSUAL_PROTOCOL` event types for completeness
+
+---
+
+## 03 — EVENT PIPELINE HARDENING (CIS Control 8) — `Event-Ingestion-Service`
+
+### Current state
+- `AssetEventProducer` sends with `assetId` as Kafka key ✅
+- `EventIngestionServiceImpl` validates asset before ingesting ✅
+- `AssetEvent` in EIS uses `Long assetId` — **MISMATCH**: asset-service uses `UUID assetId`
+
+### Tasks
+
+#### [MODIFY] `AssetEvent.java` (in EIS)
+- Add `int port` field (needed for discovery engine + risk engine port tracking)
+
+#### [MODIFY] `EventRequest.java` (EIS DTO)
+- Add `int port` field so callers can pass port info
+
+#### [MODIFY] `AssetEventMapper.java` (EIS)
+- Map `eventRequest.port` → `event.port`
+
+#### [MODIFY] `EventIngestionServiceImpl.java`
+- Add duplicate event detection: use a TTL-based in-memory set (`LinkedHashMap` LRU or Caffeine cache) keyed by `eventId`; if duplicate → log and skip
+- Add proper error handling for Kafka send failures (callback on `kafkaTemplate.send().whenComplete(...)`)
+
+#### [MODIFY] `AssetEventProducer.java` (EIS)
+- Add send callback to log success/failure per event
+- Add retry config in application.yaml (`spring.kafka.producer.retries`)
+
+---
+
+## 04 — ALERT HISTORY & INCIDENT GROUPING (CIS Control 17) — `ALERT-SERVICE`
+
+### Current state
+- `RiskEvent` entity has: `alertId`, `eventId`, `assetId` (Long — **MISMATCH vs UUID**), `riskScore`, `riskLevel`, `reason`, `timestamp`, `isResolved`
+- `AlertController` has: `GET /api/alerts/history` (top 50), `POST /{id}/resolve`
+- **Missing**: severity enum, alert grouping, proper history query
+
+### Tasks
+
+#### [MODIFY] `RiskEvent.java` (ALERT-SERVICE entity)
+- Add `String severity` field (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`) derived from `riskLevel`
+- Add `String groupKey` field (e.g., `assetId + ":" + riskLevel`) for incident grouping
+
+#### [NEW] `AlertSeverity.java` enum
+- `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`
+
+#### [MODIFY] `AlertController.java`
+- Add `GET /api/alerts/history?severity=HIGH` — filter by severity
+- Add `GET /api/alerts/active` — return only `isResolved = false`
+- Add `GET /api/alerts/grouped` — group alerts by `groupKey`
+
+#### [MODIFY] `RiskEventRepository.java`
+- Add `findByIsResolvedFalseOrderByTimestampDesc()`
+- Add `findBySeverityOrderByTimestampDesc(String severity)`
+
+#### [MODIFY] Kafka consumer (whichever class consumes `risk-events` topic)
+- Set `severity` field based on `riskScore` before saving
+- Set `groupKey = assetId + ":" + riskLevel`
+
+---
+
+## 05 — MITRE ATT&CK TAGGING (bonus, CIS Control 13 depth) — `RISK-ENGINE`
+
+### Tasks
+
+#### [MODIFY] `RiskReasonBuilder.java`
+- Add MITRE tactic tags to the reason string:
+  - `UNAUTHORIZED_ACCESS` → `[MITRE: TA0001 - Initial Access]`
+  - `PRIVILEGE_ESCALATION` → `[MITRE: TA0004 - Privilege Escalation]`
+  - `PORT_SCAN` → `[MITRE: TA0043 - Reconnaissance]`
+  - `AUTH_FAILURE` → `[MITRE: TA0006 - Credential Access]`
+
+---
+
+## Proposed Changes — File Summary
+
+### `asset-service`
+- **[MODIFY]** `AssetServiceImpl.java` — verify/complete `upsertFromEvent`
+- **[NEW]** `NetworkEventConsumer.java` — Kafka consumer for auto-discovery
+- **[MODIFY]** `pom.xml` — add kafka dependency if missing
+- **[MODIFY]** `application.yaml` — add kafka consumer config
+
+### `Event-Ingestion-Service`
+- **[MODIFY]** `AssetEvent.java` — add `port` field
+- **[MODIFY]** `EventRequest.java` — add `port` field
+- **[MODIFY]** `AssetEventMapper.java` — map port
+- **[MODIFY]** `AssetEventProducer.java` — add send callback
+- **[MODIFY]** `EventIngestionServiceImpl.java` — duplicate detection
+
+### `RISK-ENGINE`
+- **[MODIFY]** `AssetEvent.java` — add `port` field
+- **[MODIFY]** `AssetContext.java` — add `knownPorts` set
+- **[NEW]** `NewPortUsageRule.java` — new risk rule
+- **[NEW]** `UnusualProtocolRule.java` — OT-specific risk rule
+- **[MODIFY]** `EventType.java` — add new types
+- **[MODIFY]** `RiskReasonBuilder.java` — MITRE tagging
+
+### `ALERT-SERVICE`
+- **[MODIFY]** `RiskEvent.java` — add `severity`, `groupKey`
+- **[NEW]** `AlertSeverity.java` — severity enum
+- **[MODIFY]** `AlertController.java` — add filter & group endpoints
+- **[MODIFY]** `RiskEventRepository.java` — add query methods
+- **[MODIFY]** Kafka consumer class — set severity + groupKey on save
+
+---
+
+## Verification Plan
+
+### Automated
+- Build each service: `mvn clean compile` in each service dir
+- No compilation errors after changes
+
+### Manual (flow test)
+1. Start Kafka + Postgres via docker-compose
+2. POST event to EIS → verify it reaches Kafka topic with `assetId` as key
+3. RISK-ENGINE picks up event → verify new rules fire (NewPortUsage, UnusualProtocol)
+4. Verify `RiskEvent` saved in ALERT-SERVICE DB with `severity` and `groupKey`
+5. GET `/api/alerts/active` returns unresolved alerts
+6. GET `/api/alerts/grouped` shows grouped incidents
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Q1**: The `asset-discovery-engine` is described as a **new standalone service** in the plan. Do you want it as a new service, or as a Kafka consumer added directly inside `asset-service`? (I've proposed inside `asset-service` to keep it simple for now.)
+
+> [!IMPORTANT]
+> **Q2**: The `assetId` type is `Long` in EIS and `UUID` in asset-service/risk-engine. This is an existing mismatch. Do you want me to fix this inconsistency or leave it as-is?
+
+> [!IMPORTANT]
+> **Q3**: Should the Kafka consumer in `asset-service` for auto-discovery listen to the same `asset-events` topic that EIS already pushes to, or a different topic?

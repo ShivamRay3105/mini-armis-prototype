@@ -1,9 +1,12 @@
 package com.sr.Event_Ingestion_Service.model;
 
+import java.util.UUID;
+
 public record AssetDTO(
-                Long assetId,
-                String protocol,
-                String ipAddress,
-                String deviceType,
-                Status status) {
+        UUID assetId,
+        String protocol,
+        String ipAddress,
+        String deviceType,
+        String macAddress,
+        Status status) {
 }

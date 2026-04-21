@@ -13,8 +13,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sr.asset_service.Enums.DeviceType;
 import com.sr.asset_service.Enums.RiskLevel;
-import com.sr.asset_service.Exception.DuplicateResourceException;
 import com.sr.asset_service.Exception.ResourceNotFoundException;
 import com.sr.asset_service.dto.AssetRequest;
 import com.sr.asset_service.dto.StatusRequest;
@@ -62,12 +62,20 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset getAsset(UUID id) {
-        return assetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + id));
+       
+        if (id != null) {
+            return assetRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + id));
+        } else {
+            throw new IllegalArgumentException("Asset ID cannot be null");
+        }
     }
 
     @Override
     public Asset updateAssetStatus(UUID id, StatusRequest request) {
+        if (id == null) {
+            throw new IllegalArgumentException("Asset ID cannot be null");
+        }
         Asset asset = assetRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + id));
 
@@ -82,6 +90,11 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset updateAssetLastSeen(UUID id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("Asset ID cannot be null");
+        }
+
         Asset asset = assetRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + id));
 
@@ -92,6 +105,11 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional
     public void updateRisk(UUID assetId, double newRiskScore) {
+
+        if (assetId == null) {
+            throw new IllegalArgumentException("Asset ID cannot be null");
+        }
+
         Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + assetId));
 
@@ -152,10 +170,14 @@ public class AssetServiceImpl implements AssetService {
             asset.setLastSeen(Instant.now());
             asset.setCommunicationCount(asset.getCommunicationCount() + 1);
 
+            if (protocol != null && !protocol.isBlank() && asset.getProtocol() == null) {
+                asset.setProtocol(protocol);
+            }
+
             // CIS-1: set deviceType only if not already classified
             if (deviceType != null && !deviceType.isBlank() && asset.getDeviceType() == null) {
                 try {
-                    asset.setDeviceType(com.sr.asset_service.Enums.DeviceType.valueOf(deviceType));
+                    asset.setDeviceType(DeviceType.valueOf(deviceType));
                 } catch (IllegalArgumentException ignored) {
                     // unknown classification string — leave as null
                 }
@@ -174,13 +196,15 @@ public class AssetServiceImpl implements AssetService {
             com.sr.asset_service.Enums.DeviceType resolvedType = null;
             if (deviceType != null && !deviceType.isBlank()) {
                 try {
-                    resolvedType = com.sr.asset_service.Enums.DeviceType.valueOf(deviceType);
-                } catch (IllegalArgumentException ignored) { /* unknown string — leave null */ }
+                    resolvedType = DeviceType.valueOf(deviceType);
+                } catch (IllegalArgumentException ignored) {
+                    /* unknown string — leave null */ }
             }
             asset = Asset.builder()
                     .macAddress(mac)
                     .ipAddress(ip)
-                    .deviceType(resolvedType)  // CIS-1: typed device inventory
+                    .protocol(protocol)
+                    .deviceType(resolvedType) // CIS-1: typed device inventory
                     .firstSeen(Instant.now())
                     .lastSeen(Instant.now())
                     .communicationCount(1)
@@ -193,6 +217,10 @@ public class AssetServiceImpl implements AssetService {
                     .riskLevel(RiskLevel.LOW)
                     .status(Status.ACTIVE)
                     .build();
+        }
+
+        if(asset == null) {
+            throw new IllegalStateException("Asset cannot be null at this point");
         }
 
         Asset saved;

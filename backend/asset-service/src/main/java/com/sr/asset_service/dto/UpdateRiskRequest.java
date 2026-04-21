@@ -1,5 +1,7 @@
 package com.sr.asset_service.dto;
 
-public record UpdateRiskRequest(Long assetId, double newRiskScore) {
+import java.util.UUID;
+
+public record UpdateRiskRequest(UUID assetId, double newRiskScore) {
 
 }

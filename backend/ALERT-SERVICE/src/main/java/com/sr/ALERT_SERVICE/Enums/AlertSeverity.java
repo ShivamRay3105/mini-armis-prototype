@@ -1,4 +1,4 @@
-package com.sr.ALERT_SERVICE.db;
+package com.sr.ALERT_SERVICE.Enums;
 
 /**
  * CIS Control 17 — Incident Response:
