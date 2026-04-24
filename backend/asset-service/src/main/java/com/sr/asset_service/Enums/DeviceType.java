@@ -8,6 +8,5 @@ public enum DeviceType {
     ROUTER,
     SWITCH,
     CAMERA,
-    LAPTOP,
     UNKNOWN
 }

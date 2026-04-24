@@ -1,9 +1,7 @@
 package com.sr.ALERT_SERVICE.Repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,12 +11,12 @@ import com.sr.ALERT_SERVICE.db.RiskEvent;
 
 /**
  * CIS Control 8 — Audit Log Management:
- *   findByIsResolvedFalse: active incident queue (unresolved alerts)
- *   findBySeverity:        priority filtering for SOC triage
- *   countByGroupKey:       incident correlation queries
+ * findByIsResolvedFalse: active incident queue (unresolved alerts)
+ * findBySeverity: priority filtering for SOC triage
+ * countByGroupKey: incident correlation queries
  *
  * CIS Control 17 — Incident Response:
- *   groupBy queries support the incident lifecycle view.
+ * groupBy queries support the incident lifecycle view.
  */
 public interface RiskEventRepository extends JpaRepository<RiskEvent, Long> {
 
