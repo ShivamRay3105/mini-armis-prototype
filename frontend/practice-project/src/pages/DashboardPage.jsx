@@ -37,6 +37,10 @@ export default function DashboardPage() {
           <p>You are now logged in to your account.</p>
         </div>
 
+
+
+
+
         <div className="dashboard-content">
           <div className="card">
             <h3>User Information</h3>

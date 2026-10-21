@@ -62,7 +62,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset getAsset(UUID id) {
-       
+
         if (id != null) {
             return assetRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("No Asset found with id " + id));
@@ -219,7 +219,7 @@ public class AssetServiceImpl implements AssetService {
                     .build();
         }
 
-        if(asset == null) {
+        if (asset == null) {
             throw new IllegalStateException("Asset cannot be null at this point");
         }
 
