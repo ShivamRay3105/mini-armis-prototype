@@ -23,7 +23,7 @@ public class AssetEventProducer {
     public void sendEvent(@RequestBody AssetEvent event) {
         log.info("Pushing Asset Event to Kafka for Asset: {}", event.assetId());
 
-        kafkaTemplate.send(TOPIC, event.assetId().toString(), event); // Drops letter in mailbox
+        kafkaTemplate.send(TOPIC, event.assetId().toString(), event); 
     }
 
 }

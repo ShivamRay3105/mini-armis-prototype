@@ -4,8 +4,6 @@ import org.springframework.http.HttpEntity;
 
 import com.sr.Event_Ingestion_Service.model.AssetDTO;
 
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-
 public interface ResilientAssetClient {
     
     // public void sendUpdate(UpdateRiskRequest request);

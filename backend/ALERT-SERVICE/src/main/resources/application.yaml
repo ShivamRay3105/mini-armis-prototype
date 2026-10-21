@@ -20,7 +20,7 @@ spring:
     # 'localhost' works because we mapped the ports in docker-compose
     url: jdbc:postgresql://localhost:5432/sentinel-alert
     username: postgres
-    password: 1989221134
+    password: 
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

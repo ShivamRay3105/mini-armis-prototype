@@ -8,7 +8,7 @@ spring:
     # Points to your LOCAL pgAdmin database
     url: jdbc:postgresql://localhost:5432/sentinel-auth
     username: postgres 
-    password: 1989221134
+    password: 
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

@@ -39,10 +39,10 @@ public class EventIngestionServiceImpl implements EventIngestionService {
         try {
             log.info("Validating asset with id {}", assetId);
             // AssetDTO asset = assetServiceClient.getAssetById(assetId).getBody();
-            // 1. Get the wrapper
+            // Get the wrapper
             HttpEntity<AssetDTO> responseEntity = resilientAssetClient.checkAssetId(assetId);
 
-            // 2. Safely get the body
+            // Safely get the body
             AssetDTO asset = (responseEntity != null) ? responseEntity.getBody() : null;
 
             if (asset == null) {
