@@ -5,7 +5,7 @@ spring:
   application:
     name: AUTH-SERVICE
   datasource:
-    # Points to your LOCAL pgAdmin database
+    
     url: jdbc:postgresql://localhost:5432/sentinel-auth
     username: postgres 
     password: 
@@ -16,12 +16,12 @@ spring:
     show-sql: true
   data:
     redis:
-      # Points to your DOCKER Redis container
+      
       host: localhost
       port: 6379
 
 jwt:
-  # Generate a long random string for this
+  
   secret: 
   access-token-expiration: 900000 # 15 minutes
   refresh-token-expiration: 604800000 # 7 days
